@@ -15,7 +15,7 @@ namespace Clustering {
 
     public:
         Point(int);
-        Point(int, double *);//TODO
+        //Point(int, double *);//TODO
 
         // Big three: cpy ctor, overloaded operator=, dtor
         Point(const Point &);
@@ -35,10 +35,10 @@ namespace Clustering {
         // Members
         Point &operator*=(double);
         Point &operator/=(double);
-        const Point operator*(double) const; // prevent (p1*2) = p2;
+        const Point operator*(double) const; // prevent (p1*2) = p2;<-- Do you mean later?
         const Point operator/(double) const;
 
-        double &operator[](int index) { return values[index - 1]; } // TODO out-of-bds?
+        //double &operator[](int index) { return values[index - 1]; } // TODO out-of-bds? what?
 
         // Friends
         friend Point &operator+=(Point &, const Point &);
