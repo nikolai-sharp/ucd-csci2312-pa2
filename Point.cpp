@@ -186,7 +186,7 @@ namespace Clustering {
         return point;
     }
 
-    //
+    //return temp point that represents one point added to another
     const Point Clustering::operator+(const Point &point, const Point &point1)
     {
         //create a temporary point to return
@@ -194,18 +194,109 @@ namespace Clustering {
         {
             Point p(point.getDims());
 
+            //set values of p adding the other two together
             for (int i = 0; i < point.getDims(); i++)
             {
-                p.va
+                p.values[i] = point.values[i] + point1.values[i];
             }
-
             return p;
         }
-
+		else //TODO fix
+			return 0;
 
     }
 
+ 	//return temp point that represents one point subtracted from another
+	const Point Clustering::operator-(const Point &point, const Point &point1)
+	{
+		//create a temporary point to return
+		if (point.getDims() == point1.getDims())
+		{
+			Point p(point.getDims());
 
+			//set values of p adding the other two together
+			for (int i = 0; i < point.getDims(); i++)
+			{
+				p.values[i] = point.values[i] - point1.values[i];
+			}
+			return p;
+		}
+		else //TODO fix
+			return 0;
+	}
+
+	//overload == operator
+	bool Clustering::operator==(const Point &point, const Point &point1)
+	{
+		if (point.getDims() == point1.getDims())
+		{
+			//for loop returns false if any elements are different
+			for (int i = 0; i < point.getDims(); i++)
+			{
+				if (point.values[i] != point1.values[i])
+					return false;
+			}
+			//once all elements have been tested, return true
+			return true;
+		}
+
+			//return false if different number of dims
+		else
+			return false;
+	}
+
+	//overload != operator. reuse ==..my favorite.
+	bool Clustering::operator!=(const Point &point, const Point &point1)
+	{
+		return !(point == point1);
+	}
+
+	//overload < operator
+	bool Clustering::operator<(const Point &point, const Point &point1)
+	{
+		//makes sure points are comparable, and that they are not already equal. reuses !=
+		if (point.getDims() == point1.getDims() && point != point1)
+		{
+			//tests dimensions in lexicographic order.
+			for (int i = 0; i < point.getDims(); i++)
+			{
+				//returns true at first sign of true
+				if (point.values[i] < point1.values[i])
+					return true;
+
+					//returns false at first sign of false
+				else if (point.values[i] > point1.values[i])
+					return false;
+				//continues on to next dimension otherwise
+			}
+			//should not get past here logically
+		}
+
+		//if points do not have the same number of dimensions or are equal, return false
+		else
+			return false;
+	}
+
+	//overlaod > operator. if not less than and not equal to, should be greater
+	bool Clustering::operator>(const Point &point, const Point &point1)
+	{
+		//hehe. should work.
+		return (point != point1 && !(point < point1));
+	}
+
+	// overload <= operator. use previous functions
+	bool Clustering::operator<=(const Point &point, const Point &point1)
+	{
+		//return  less than    or     equal to
+		return (point < point1 || point == point1);
+	}
+
+	//overlaod >= operator. use previous functions
+	bool Clustering::operator>=(const Point &point, const Point &point1)
+	{
+		//return greater than  or    equal to
+		return (point > point1 || point == point1);
+	}
 
     std::ostream &operator<<(std::ostream &os, const Point &point)
     {
