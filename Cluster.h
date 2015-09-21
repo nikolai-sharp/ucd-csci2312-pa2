@@ -15,17 +15,30 @@ namespace Clustering {
 //    struct LNode;
 //    typedef LNode *LNodePtr;
 
+
     struct LNode {
         PointPtr p;
         LNodePtr next;
     };
 
+
     class Cluster {
         int size;
+        //Using this as the head
         LNodePtr points;
+        //point to current LNode in linked list
+        LNodePtr ptPtr;
+        //point to next LNode for comparison to ptPtr
+        LNodePtr nextPtr;
+        //point to last LNode
+        LNodePtr endPtr;
+        //used to create new LNode
+        LNodePtr newPtr;
+        //add member variable to hold number of dimensions this cluster holds
+        int dim;
 
     public:
-        Cluster() : size(0), points(nullptr) {};
+        Cluster() : size(0), points(nullptr), endPtr(nullptr), dim(0){};
 
         // The big three: cpy ctor, overloaded operator=, dtor
         Cluster(const Cluster &);

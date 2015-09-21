@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Point.h"
+#include "Cluster.h"
 using namespace Clustering;
 
 int main() {
@@ -118,7 +119,70 @@ int main() {
 	std::cout << std::endl << std:: endl << (p1 <= p4) << std::endl << (p3 >= p9);
 	std::cout << std::endl << std:: endl << (p1 >= p2) << std::endl << (p2 <= p3);
 
+	std::cout << "\n\nNow begins cluster class testing\n";
+
+	//create LNode for test
+	LNode test;
+	test.p = &p1;
+
+	//test LNode printing
+	std::cout << *test.p;
+
+	//test LNode for printing
+	LNodePtr testptr;
+	testptr = &test;
+
+	std::cout << *testptr->p;
+
+	//test manipulation of pointers via LNode
+	*testptr->p *= 4;
+	//test multiple cout problem:
+	std::cout << *testptr->p << p9; //it worked!
+
+	//finally test cluster add and print
+	std::cout << std::endl << std::endl;
+
+	Cluster c1;
+
+	c1.add(&p1);
+
+	std::cout << c1;
+
+	c1.add(&p2);
+	c1.add(&p3);
+
+	std::cout << c1;
+
+	//try to add point of more dims, should not work
+	//c1.add(&p5); //will not let me. good.
+	//std::cout << c1;
+
+	c1.add(&p9);
+
+	std::cout << c1;
 
 
+	//create more points for cluster testing
+	Point p10 = p9 * 10;
+	Point p11 = p9 * 2;
+
+	//add them to cluster
+	c1.add(&p10);
+	c1.add(&p11);
+
+	//print result
+	std::cout << c1;
+
+	//test dynamic creation of empty point and its addition to cluster
+	Point *pt1 = new Point();
+	//test setting empty point equal to another.
+	*pt1 = p11;
+
+	c1.add(pt1);
+
+	std::cout << c1;
+
+
+	delete pt1;
     return 0;
 }

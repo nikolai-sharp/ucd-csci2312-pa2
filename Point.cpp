@@ -36,7 +36,7 @@ namespace Clustering {
     Point &Point::operator=(const Point &rhs)
     {
         //only copies if the number of dimensions are the same and it is not itself
-        if ((dim == rhs.dim))  //TODO make sure not self
+        if ((dim == rhs.dim) && (rhs != *this))
         {
             //For loop copies values of oPoint into the values of this point
             for (int i = 0; i < rhs.dim; i++) {
@@ -45,6 +45,20 @@ namespace Clustering {
             return *this;
         }
 
+			//for the case that point is empty
+		else if (this->dim == 0)
+		{
+			//set point to rhs dim
+			this->dim = rhs.dim;
+
+			//initialize dynamic array
+			this->values = new double[this->dim];
+
+			//copy values
+			for (int i = 0; i < rhs.dim; i++) {
+				*(values + i) = rhs.values[i];
+			}
+		}
         else
         {
             std::cout << "\nthat is not possible";
@@ -308,6 +322,10 @@ namespace Clustering {
         }
         //adds the final value followed by a close parentheses
         os << point.getValue(point.getDims() - 1) << ")";
+
+		//discovered that I needed to return to os variable.
+		//can not output multiple things from same cout otherwise.
+		return os;
     }
 }
 

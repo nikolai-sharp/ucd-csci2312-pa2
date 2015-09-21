@@ -14,6 +14,8 @@ namespace Clustering {
         double *values; // values of the point's dimensions
 
     public:
+        //added default constructor to set dim to 0
+        Point(): dim(0){};
         Point(int);
         //Point(int, double *);//TODO
 
