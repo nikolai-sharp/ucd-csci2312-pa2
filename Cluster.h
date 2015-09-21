@@ -53,11 +53,11 @@ namespace Clustering {
 
         // IO
         friend std::ostream &operator<<(std::ostream &, const Cluster &);
-        friend std::istream &operator>>(std::istream &, Cluster &);
+        //friend std::istream &operator>>(std::istream &, Cluster &); //not sure what to do with this. not in inst.
 
         // Set-preserving operators (do not duplicate points in the space)
         // - Friends
-        friend bool operator==(const Cluster &lhs, const Cluster &rhs);
+        friend bool operator==(const Cluster &lhs, const Cluster &rhs); //TODO
 
         // - Members
         Cluster &operator+=(const Cluster &rhs); // union

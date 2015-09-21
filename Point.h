@@ -57,8 +57,9 @@ namespace Clustering {
         friend bool operator>=(const Point &, const Point &);
 
         friend std::ostream &operator<<(std::ostream &, const Point &);
-        //I don't really see how I might use this.
-        friend std::istream &operator>>(std::istream &, Point &); //TODO not in instructions?
+
+        //I don't really see how I might use this. It is not specifically in the instructions.
+        //friend std::istream &operator>>(std::istream &, Point &);
     };
 
 }

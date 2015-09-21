@@ -18,7 +18,7 @@ namespace Clustering
 		ptr = cluster.points;
 
 		//announce beginning:
-		os << "\nc1:";
+		os << "\ncluster:";
 
 		//while loop stops at end
 		while (ptr != nullptr)
@@ -33,28 +33,71 @@ namespace Clustering
 		return os;
 	}
 
+	//I realize now after all of this that I could have used the add function.. oh well.
 	Cluster::Cluster(const Cluster &cluster)
 	{
-//		//starts us off at the head //todo
-//		LNode * oldPtr = cluster.points;
-//		ptPtr = points;
-//
-//
-////		for (int i = 0; i < cluster.size; i++)
-////		{
-////			ptPtr->p = oldPtr->p;
-////
-////			oldPtr = oldPtr->next;
-////		}
+		//point points to first element and ptptr to next element in cluster
+		points = new LNode;
+		points->p = cluster.points->p;
+		//nextPtr will navigate other cluster. if only one point in list, nextPtr will = nullptr
+		nextPtr = cluster.points->next;
+		//endPtr will take up the rear behind newPtr
+		endPtr = points;
+
+		//increment size
+		this->size++;
+
+		//now create new linked list of LNodes that point to same points as other cluster
+		while(nextPtr != nullptr)
+		{
+			//create new LNode and point it to next point
+			newPtr = new LNode;
+			newPtr->p = nextPtr->p;
+
+			//point previous LNode to new
+			endPtr->next = newPtr;
+
+			//set newPtr->next to point to nullPtr in case nextPtr->next is null as well
+			newPtr->next = nullptr;
+
+			//increment ptPtr and nextPtr
+			endPtr = endPtr->next;
+			nextPtr = nextPtr->next;
+
+			//increment size
+			this->size++;
+		}
 	}
 
-//	Cluster &Cluster::operator=(const Cluster &cluster) //todo
-//	{
-//		return <#initializer#>;
-//	}
-
-	Cluster::~Cluster() //todo
+	Cluster &Cluster::operator=(const Cluster &cluster) //todo
 	{
+		//make sure not self and that this is empty
+		assert (&cluster != this);
+
+
+
+		return *this;
+	}
+
+	Cluster::~Cluster()
+	{
+		//needs to delete all dynamically allocated things
+		//set ptPtr to beginning
+		ptPtr = points;
+		//set nextPtr to ptPtr.next
+		nextPtr = ptPtr->next;
+		while (ptPtr != nullptr)
+		{
+			//delete LNode
+			delete ptPtr;
+
+			//set ptPtr to nextPtr
+			ptPtr = nextPtr;
+
+			//Then nextPtr to nextPtr.next, but only if it is not already nullptr
+			if (nextPtr != nullptr)
+				nextPtr = nextPtr->next;
+		}
 
 	}
 
@@ -89,7 +132,7 @@ namespace Clustering
 		}
 
 		//Next we check if point will be added at the very beginning and put it there
-		else if (*ptr <= *points->p)
+		else if (*ptr < *points->p)
 		{
 			//point new LNode to current head
 			newPtr->next = points;
@@ -99,7 +142,7 @@ namespace Clustering
 		}
 
 		//Now check if point should be added at end
-		else if (*ptr >= *endPtr->p)
+		else if (*ptr > *endPtr->p)
 		{
 			//point current end to new end
 			endPtr->next = newPtr;
@@ -124,11 +167,29 @@ namespace Clustering
 				//Check if it fits between the two. if it does, put it there
 				if (*ptr >= *ptPtr->p && *ptr <= *nextPtr->p)
 				{
+					//make sure the specific point does not already exist in cluster. Breaks if it is
+					if (ptr == ptPtr->p || ptr == nextPtr->p)
+					{
+						//should break out of while loop //todo test this
+						break;
+					}
+
+
+					//forces antoher increment if ptr is still <= nextPtr-p
+						//probably a simpler way, bt I'm already pretty far in
+					else if (*ptr <= nextPtr->p)
+					{
+						ptPtr = ptPtr->next;
+						nextPtr = nextPtr->next;
+					}
+					else
+					{
 					//set new pointer to point to next
 					newPtr->next = nextPtr;
 
 					//set ptPtr to point to newPtr
 					ptPtr->next = newPtr;
+					}
 				}
 
 				//if not, shift two over
@@ -138,10 +199,145 @@ namespace Clustering
 					nextPtr = nextPtr->next;
 				}
 			}
+			//if this got to the end, then the point was not added
+			if (newPtr->next == nullptr)
+			{
+				//decrease size, let user know, and delete the LNode
+				size--;
+				std::cout << "\nspecific point exists in cluster\n";
+				delete newPtr;
+			}
 		}
 
 		//increment size, point was added
 		size++;
 	}
 
+	const PointPtr &Cluster::remove(PointPtr const &ptr)
+	{
+		//set ptPtr to beginning
+		ptPtr = points;
+
+		//set nextPtr to point after ptPtr to check against ptr
+		nextPtr = ptPtr->next;
+
+		//loop through and check values
+		while (ptPtr->next != nullptr)
+		{
+			if (nextPtr->p == ptr)
+			{
+				//point ptPtr to nextPtr.next to cut out nextPtr
+				ptPtr->next = nextPtr->next;
+
+				//decrement size
+				size--;
+
+				//delete LNode link in nextPtr
+				delete nextPtr;
+
+				//break out of while loop
+				break;
+			}
+		}
+
+		//returns ptr so you can use in add statement
+		return ptr;
+	}
+
+	Cluster &Cluster::operator+=(const Cluster &rhs)
+	{
+		//make sure clusters hold same number of dimensions
+		assert (rhs.dim == dim);
+		//I'll use nextPtr to navigate other cluster
+		nextPtr = rhs.points;
+
+		while (nextPtr != nullptr)
+		{
+			//add the point. should not add duplicate specific points
+			add(nextPtr->p);
+
+			//increment nextPtr
+			nextPtr = nextPtr->next;
+		}
+		return *this;
+	}
+
+	Cluster &Cluster::operator-=(const Cluster &rhs)
+	{
+		//make sure clusters have same number of dimensions
+		assert (rhs.dim == dim);
+
+		//use similar logic as +=
+		//I'll use nextPtr to navigate other cluster
+		nextPtr = rhs.points;
+
+		while (nextPtr != nullptr)
+		{
+			//remove the point. won't remove points not in array
+			remove(nextPtr->p);
+
+			//increment nextPtr
+			nextPtr = nextPtr->next;
+		}
+
+		return *this;
+	}
+
+	Cluster &Cluster::operator+=(const Point &rhs)
+	{
+		assert (rhs.getDims() == dim);
+		//add point and return cluster
+		add(&rhs);
+		return *this;
+	}
+
+	Cluster &Cluster::operator-=(const Point &rhs)
+	{
+		assert (rhs.getDims() == dim);
+		//can just remove the point and return cluster
+		remove(&rhs);
+		return *this;
+	}
+
+	const Cluster Clustering::operator+(const Cluster &lhs, const Cluster &rhs)
+	{
+		assert (lhs.dim == rhs.dim);
+		//create new cluster using lhs. I don't think I want to do this dynamically.
+		Cluster sum(lhs);
+
+		//add sum to rhs
+		sum += rhs;
+
+		//return sum
+		return sum;
+	}
+
+	//extremely similar to + not doing dynamically..
+	const Cluster Clustering::operator-(const Cluster &lhs, const Cluster &rhs)
+	{
+		assert (lhs.dim == rhs.dim);
+		//create cluster with lhs, subtract rhs from new cluster, return new cluster.
+		Cluster diff(lhs);
+		diff -= rhs;
+		return diff;
+	}
+
+
+	const Cluster Clustering::operator+(const Cluster &lhs, const PointPtr &rhs)
+	{
+		assert (lhs.dim == rhs->getDims());
+		//create cluster to add two together, return new cluster.
+		Cluster sum(lhs);
+		sum += *rhs;
+		return sum;
+	}
+
+	const Cluster Clustering::operator-(const Cluster &lhs, const PointPtr &rhs)
+	{
+		assert (lhs.dim == rhs->getDims());
+		//create cluster with lhs, -= the point, and return new cluster.
+		Cluster diff(lhs);
+		diff -= *rhs;
+		return diff;
+	}
 }

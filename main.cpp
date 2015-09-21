@@ -182,6 +182,17 @@ int main() {
 
 	std::cout << c1;
 
+	//test copy constructor
+	Cluster c2(c1);
+
+	std::cout << "\nc2:" << c2;
+
+	Cluster * ct1 = new Cluster(c1);
+
+	//test of dynamically allocated cluster and cluster destructor (I think)
+	std::cout << "\nct1:" << *ct1;
+	delete ct1;
+	std::cout << "\nct1:" << *ct1;
 
 	delete pt1;
     return 0;
