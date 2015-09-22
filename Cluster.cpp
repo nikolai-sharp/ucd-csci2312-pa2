@@ -76,6 +76,7 @@ namespace Clustering
 	{
 		//make sure not self and that this is empty
 		assert (&cluster != this);
+		LNodePtr nextPtr2;
 
 		//call destructor to wipe out cluster
 		if (size != 0)
@@ -84,14 +85,14 @@ namespace Clustering
 		}
 
 		//set nextPtr to head of right hand cluster
-		nextPtr = cluster.points;
+		nextPtr2 = cluster.points;
 
 
-		while (nextPtr != nullptr)
+		while (nextPtr2 != nullptr)
 		{
-			add(nextPtr->p);
+			add(nextPtr2->p);
 
-			nextPtr = nextPtr->next;
+			nextPtr2 = nextPtr2->next;
 		}
 
 
@@ -102,25 +103,27 @@ namespace Clustering
 	{
 		//needs to delete all dynamically allocated things
 		//set ptPtr to beginning
-		ptPtr = points;
-		//set nextPtr to ptPtr.next
-		nextPtr = ptPtr->next;
-		while (ptPtr != nullptr)
+		if (size != 0)
 		{
-			//delete LNode
-			delete ptPtr;
+			ptPtr = points;
+			//set nextPtr to ptPtr.next
+			nextPtr = ptPtr->next;
+			while (ptPtr != nullptr)
+			{
+				//delete LNode
+				delete ptPtr;
 
-			//set ptPtr to nextPtr
-			ptPtr = nextPtr;
+				//set ptPtr to nextPtr
+				ptPtr = nextPtr;
 
-			//Then nextPtr to nextPtr.next, but only if it is not already nullptr
-			if (nextPtr != nullptr)
-				nextPtr = nextPtr->next;
+				//Then nextPtr to nextPtr.next, but only if it is not already nullptr
+				if (nextPtr != nullptr)
+					nextPtr = nextPtr->next;
+			}
+			//added in case I want to call destructor and re-use cluster.. or for = operator
+			size = 0;
+			dim = 0;
 		}
-		//added in case I want to call destructor and re-use cluster.. or for = operator
-		size = 0;
-		dim = 0;
-
 	}
 
 	void Cluster::add(PointPtr const &ptr)
@@ -304,26 +307,6 @@ namespace Clustering
 		return true;
 	}
 
-	Cluster &Cluster::operator+=(const Point &rhs)
-	{
-		assert (rhs.getDims() == dim);
-		//add point and return cluster
-		//use newPtr->p to allow use of add function
-		*newPtr->p = rhs;
-		add(newPtr->p);
-		return *this;
-	}
-
-	Cluster &Cluster::operator-=(const Point &rhs)
-	{
-		assert (rhs.getDims() == dim);
-		//can just remove the point and return cluster
-		//use newPtr->p to allow use of remove function
-		*newPtr->p = rhs;
-		remove(newPtr->p);
-		return *this;
-	}
-
 	const Cluster Clustering::operator+(const Cluster &lhs, const Cluster &rhs)
 	{
 		assert (lhs.dim == rhs.dim);
@@ -353,7 +336,7 @@ namespace Clustering
 		assert (lhs.dim == rhs->getDims());
 		//create cluster to add two together, return new cluster.
 		Cluster sum(lhs);
-		sum += *rhs;
+		sum += rhs;
 		return sum;
 	}
 
@@ -362,7 +345,7 @@ namespace Clustering
 		assert (lhs.dim == rhs->getDims());
 		//create cluster with lhs, -= the point, and return new cluster.
 		Cluster diff(lhs);
-		diff -= *rhs;
+		diff -= rhs;
 		return diff;
 	}
 
@@ -400,6 +383,18 @@ namespace Clustering
 			//increment nextPtr
 			nextPtr2 = nextPtr2->next;
 		}
+		return *this;
+	}
+
+	Cluster &Cluster::operator+=(const PointPtr &rhs)
+	{
+		add(rhs);
+		return *this;
+	}
+
+	Cluster &Cluster::operator-=(const PointPtr &rhs)
+	{
+		remove(rhs);
 		return *this;
 	}
 }

@@ -233,6 +233,18 @@ int main() {
 
 	std::cout << *ct2;
 
+	Cluster c4;
+	c4 = (c1-c2);
+	c4 += &p2;
+
+	std::cout << "\nc4           	  boop: " << c4;
+
+	Cluster c5;
+	c5 = (c1 + c2);
+	std::cout << c1 << c2 << c5;
+
+	delete ct3;
+	delete ct2;
 	delete pt1;
     return 0;
 }
