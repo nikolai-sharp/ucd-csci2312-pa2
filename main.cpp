@@ -236,12 +236,57 @@ int main() {
 	Cluster c4;
 	c4 = (c1-c2);
 	c4 += &p2;
+	c4 -= &p9;
 
-	std::cout << "\nc4           	  boop: " << c4;
+	std::cout << p9 << "\nc4           	  boop: " << c4;
 
 	Cluster c5;
 	c5 = (c1 + c2);
+	c5 -= &p1;
 	std::cout << c1 << c2 << c5;
+
+
+	Point po1(3);
+	po1.setValue(0,1);
+	po1.setValue(1,1);
+	po1.setValue(2,1);
+
+	Point po2(3);
+	po2.setValue(0,2);
+	po2.setValue(1,2);
+	po2.setValue(2,2);
+
+	Point po3(3);
+	po3.setValue(0,3);
+	po3.setValue(1,3);
+	po3.setValue(2,3);
+
+	Point po4(3);
+	po4.setValue(0,4);
+	po4.setValue(1,4);
+	po4.setValue(2,4);
+
+	Point po5(3);
+	po5.setValue(0,2);
+	po5.setValue(1,2);
+	po5.setValue(2,2);
+
+	Cluster cl1;
+	Cluster cl2;
+
+	cl1.add(&po1);
+	cl1.add(&po2);
+	cl1.add(&po3);
+	cl2.add(&po4);
+	cl2.add(&po5);
+	cl2.add(&po3);
+
+	std::cout << "\n              cl1 + cl2:" << (cl1 + cl2);
+	std::cout << "\n              cl1 - cl2:" << (cl1 - cl2);
+	std::cout << "\n              cl2 + cl1:" << (cl2 + cl1);
+	std::cout << "\n              cl2 - cl1:" << (cl2 - cl1);
+
+
 
 	delete ct3;
 	delete ct2;

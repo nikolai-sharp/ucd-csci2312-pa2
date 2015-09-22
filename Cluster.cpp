@@ -103,7 +103,7 @@ namespace Clustering
 	{
 		//needs to delete all dynamically allocated things
 		//set ptPtr to beginning
-		if (size != 0)
+		if (size < 2)
 		{
 			ptPtr = points;
 			//set nextPtr to ptPtr.next
@@ -123,6 +123,10 @@ namespace Clustering
 			//added in case I want to call destructor and re-use cluster.. or for = operator
 			size = 0;
 			dim = 0;
+		}
+		else if (size == 1)
+		{
+			delete points;
 		}
 	}
 
@@ -248,6 +252,15 @@ namespace Clustering
 
 		//set nextPtr to point after ptPtr to check against ptr
 		nextPtr = ptPtr->next;
+
+		// check if ptPtr = ptr
+		if (ptPtr->p == ptr)
+		{
+			//make points = nextPtr and delete ptPtr
+			points = nextPtr;
+
+			delete ptPtr;
+		}
 
 		//loop through and check values
 		while (ptPtr->next != nullptr)
