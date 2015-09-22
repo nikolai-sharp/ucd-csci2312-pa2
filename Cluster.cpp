@@ -359,7 +359,7 @@ namespace Clustering
 	Cluster &Cluster::operator+=(const Cluster &rhs)
 	{
 		//assert (rhs.dim == dim);
-		//I'll use nextPtr to navigate other cluster
+		//I'll use nextPtr2 to navigate other cluster
 		LNodePtr nextPtr2;
 		nextPtr2 = rhs.points;
 
