@@ -197,31 +197,22 @@ namespace Clustering
 				if (*ptr > *ptPtr->p && *ptr <= *nextPtr->p)
 				{
 					//now we want to order similar points by address, and exclude multiple equal addresses
-					//case 1 in which value is equal and address is less:
-					if (*ptr <= *nextPtr->p && ptr < nextPtr->p)
-					{
-						//put it there
-						newPtr->next = nextPtr;
-						ptPtr->next = newPtr;
-					}
-					//case 2 in which value is equal and address is equal, break out of while loop
-					else if (*ptr == *nextPtr->p && ptr == nextPtr->p)
+					// case 1 breaks if either address is equal to ptr
+					if (ptr == nextPtr->p || ptr == ptPtr->p)
 					{
 						break;
 					}
-					//case 3 in which value is value is equal and address is greater
-					else if (*ptr == *nextPtr->p && ptr > nextPtr->p)
-					{
-						//bump values out
-						ptPtr = ptPtr->next;
-						nextPtr = nextPtr->next;
-					}
-					//cases 4 in which case 3 is invoked and next point is larger
-					else// if (*ptr == *ptPtr->p && *ptr < *nextPtr->p)
+					//case 2 if
+					else if ((*ptr == *nextPtr->p && ptr < nextPtr->p) || *ptr < *nextPtr->p)
 					{
 						//put it there
 						newPtr->next = nextPtr;
 						ptPtr->next = newPtr;
+					}
+					else
+					{
+						ptPtr = ptPtr->next;
+						nextPtr = nextPtr->next;
 					}
 				}
 
@@ -323,11 +314,12 @@ namespace Clustering
 	const Cluster Clustering::operator+(const Cluster &lhs, const Cluster &rhs)
 	{
 		assert (lhs.dim == rhs.dim);
-		//create new cluster using lhs. I don't think I want to do this dynamically.
-		Cluster sum(lhs);
+		//create cluster.
+		Cluster sum;
 
-		//add sum to rhs
+		//add lhs and rhs to sum
 		sum += rhs;
+		sum += lhs;
 
 		//return sum
 		return sum;
@@ -348,7 +340,8 @@ namespace Clustering
 	{
 		assert (lhs.dim == rhs->getDims());
 		//create cluster to add two together, return new cluster.
-		Cluster sum(lhs);
+		Cluster sum;
+		sum += lhs;
 		sum += rhs;
 		return sum;
 	}
@@ -365,7 +358,7 @@ namespace Clustering
 	//had to redo these.. had strange issues
 	Cluster &Cluster::operator+=(const Cluster &rhs)
 	{
-		assert (rhs.dim == dim);
+		//assert (rhs.dim == dim);
 		//I'll use nextPtr to navigate other cluster
 		LNodePtr nextPtr2;
 		nextPtr2 = rhs.points;
