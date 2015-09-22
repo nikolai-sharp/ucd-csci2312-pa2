@@ -227,6 +227,12 @@ int main() {
 	std::cout << "\nthis should be 1:" << (*ct2 == *ct3);
 	std::cout << "\nthis should be 0:" << (c1 == *ct2);
 
+	std::cout << p1 << p2 << p3 << p4 << p9 << p10 << p11 << p12 << p13;
+
+	*ct2 -= c1;
+
+	std::cout << *ct2;
+
 	delete pt1;
     return 0;
 }

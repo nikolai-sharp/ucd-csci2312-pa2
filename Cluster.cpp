@@ -263,6 +263,12 @@ namespace Clustering
 				//break out of while loop
 				break;
 			}
+			else
+			{
+				//increment both
+				ptPtr = ptPtr->next;
+				nextPtr = nextPtr->next;
+			}
 		}
 
 		//returns ptr so you can use in add statement
@@ -296,45 +302,6 @@ namespace Clustering
 
 		//return true if we get through both tests without failing
 		return true;
-	}
-
-	Cluster &Cluster::operator+=(const Cluster &rhs)
-	{
-		//make sure clusters hold same number of dimensions
-		assert (rhs.dim == dim);
-		//I'll use nextPtr to navigate other cluster
-		nextPtr = rhs.points;
-
-		while (nextPtr != nullptr)
-		{
-			//add the point. should not add duplicate specific points
-			add(nextPtr->p);
-
-			//increment nextPtr
-			nextPtr = nextPtr->next;
-		}
-		return *this;
-	}
-
-	Cluster &Cluster::operator-=(const Cluster &rhs)
-	{
-		//make sure clusters have same number of dimensions
-		assert (rhs.dim == dim);
-
-		//use similar logic as +=
-		//I'll use nextPtr to navigate other cluster
-		nextPtr = rhs.points;
-
-		while (nextPtr != nullptr)
-		{
-			//remove the point. won't remove points not in array
-			remove(nextPtr->p);
-
-			//increment nextPtr
-			nextPtr = nextPtr->next;
-		}
-
-		return *this;
 	}
 
 	Cluster &Cluster::operator+=(const Point &rhs)
@@ -397,5 +364,42 @@ namespace Clustering
 		Cluster diff(lhs);
 		diff -= *rhs;
 		return diff;
+	}
+
+	//had to redo these.. had strange issues
+	Cluster &Cluster::operator+=(const Cluster &rhs)
+	{
+		assert (rhs.dim == dim);
+		//I'll use nextPtr to navigate other cluster
+		LNodePtr nextPtr2;
+		nextPtr2 = rhs.points;
+
+		while (nextPtr2 != nullptr)
+		{
+			//add the point. should not add duplicate specific points
+			add(nextPtr2->p);
+
+			//increment nextPtr
+			nextPtr2 = nextPtr2->next;
+		}
+		return *this;
+	}
+
+	Cluster &Cluster::operator-=(const Cluster &rhs)
+	{
+		assert (rhs.dim == dim);
+		//I'll use nextPtr to navigate other cluster
+		LNodePtr nextPtr2;
+		nextPtr2 = rhs.points;
+
+		while (nextPtr2 != nullptr)
+		{
+			//add the point. should not add duplicate specific points
+			remove(nextPtr2->p);
+
+			//increment nextPtr
+			nextPtr2 = nextPtr2->next;
+		}
+		return *this;
 	}
 }

@@ -60,8 +60,8 @@ namespace Clustering {
         friend bool operator==(const Cluster &lhs, const Cluster &rhs); //TODO
 
         // - Members
-        Cluster &operator+=(const Cluster &rhs); // union
-        Cluster &operator-=(const Cluster &rhs); // (asymmetric) difference
+		Cluster &operator+=(const Cluster &rhs); // union
+		Cluster &operator-=(const Cluster &rhs); // (asymmetric) difference
 
         Cluster &operator+=(const Point &rhs); // add point
         Cluster &operator-=(const Point &rhs); // remove point
