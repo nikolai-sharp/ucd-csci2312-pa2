@@ -192,7 +192,40 @@ int main() {
 	//test of dynamically allocated cluster and cluster destructor (I think)
 	std::cout << "\nct1:" << *ct1;
 	delete ct1;
-	std::cout << "\nct1:" << *ct1;
+	//std::cout << "\nct1:" << *ct1;
+
+	Cluster *ct2 = new Cluster;
+	ct2->add(&p1);
+	ct2->add(&p2);
+	ct2->add(&p3);
+	ct2->add(&p4);
+	ct2->add(&p9);
+	ct2->add(&p10);
+	ct2->add(&p11);
+
+	//test organization of points in cluster (had addresses show too) with multiple similar points
+	Point p12(3);
+	p12.setValue(0,2);
+	p12.setValue(1,4);
+	p12.setValue(2,6);
+
+	Point p13(3);
+	p13.setValue(0,2);
+	p13.setValue(1,4);
+	p13.setValue(2,6);
+
+	ct2->add(&p12);
+	ct2->add(&p11);
+	ct2->add(&p11);
+	ct2->add(&p13);
+	ct2->add(&p13);
+
+	std::cout << "ct2" << *ct2;
+
+	Cluster * ct3 = new Cluster(*ct2);
+
+	std::cout << "\nthis should be 1:" << (*ct2 == *ct3);
+	std::cout << "\nthis should be 0:" << (c1 == *ct2);
 
 	delete pt1;
     return 0;

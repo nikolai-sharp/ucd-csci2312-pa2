@@ -18,7 +18,7 @@ namespace Clustering
 		ptr = cluster.points;
 
 		//announce beginning:
-		os << "\ncluster:";
+		os << "\ncluster size:" << cluster.size << "dims:" << cluster.dim;
 
 		//while loop stops at end
 		while (ptr != nullptr)
@@ -43,6 +43,9 @@ namespace Clustering
 		nextPtr = cluster.points->next;
 		//endPtr will take up the rear behind newPtr
 		endPtr = points;
+
+		//set dims
+		dim = cluster.dim;
 
 		//increment size
 		this->size++;
@@ -74,6 +77,22 @@ namespace Clustering
 		//make sure not self and that this is empty
 		assert (&cluster != this);
 
+		//call destructor to wipe out cluster
+		if (size != 0)
+		{
+			this->~Cluster();
+		}
+
+		//set nextPtr to head of right hand cluster
+		nextPtr = cluster.points;
+
+
+		while (nextPtr != nullptr)
+		{
+			add(nextPtr->p);
+
+			nextPtr = nextPtr->next;
+		}
 
 
 		return *this;
@@ -98,6 +117,9 @@ namespace Clustering
 			if (nextPtr != nullptr)
 				nextPtr = nextPtr->next;
 		}
+		//added in case I want to call destructor and re-use cluster.. or for = operator
+		size = 0;
+		dim = 0;
 
 	}
 
@@ -165,30 +187,34 @@ namespace Clustering
 			while (newPtr->next == nullptr && nextPtr != nullptr)
 			{
 				//Check if it fits between the two. if it does, put it there
-				if (*ptr >= *ptPtr->p && *ptr <= *nextPtr->p)
+				if (*ptr > *ptPtr->p && *ptr <= *nextPtr->p)
 				{
-					//make sure the specific point does not already exist in cluster. Breaks if it is
-					if (ptr == ptPtr->p || ptr == nextPtr->p)
+					//now we want to order similar points by address, and exclude multiple equal addresses
+					//case 1 in which value is equal and address is less:
+					if (*ptr <= *nextPtr->p && ptr < nextPtr->p)
 					{
-						//should break out of while loop //todo test this
+						//put it there
+						newPtr->next = nextPtr;
+						ptPtr->next = newPtr;
+					}
+					//case 2 in which value is equal and address is equal, break out of while loop
+					else if (*ptr == *nextPtr->p && ptr == nextPtr->p)
+					{
 						break;
 					}
-
-
-					//forces antoher increment if ptr is still <= nextPtr-p
-						//probably a simpler way, bt I'm already pretty far in
-					else if (*ptr <= nextPtr->p)
+					//case 3 in which value is value is equal and address is greater
+					else if (*ptr == *nextPtr->p && ptr > nextPtr->p)
 					{
+						//bump values out
 						ptPtr = ptPtr->next;
 						nextPtr = nextPtr->next;
 					}
-					else
+					//cases 4 in which case 3 is invoked and next point is larger
+					else// if (*ptr == *ptPtr->p && *ptr < *nextPtr->p)
 					{
-					//set new pointer to point to next
-					newPtr->next = nextPtr;
-
-					//set ptPtr to point to newPtr
-					ptPtr->next = newPtr;
+						//put it there
+						newPtr->next = nextPtr;
+						ptPtr->next = newPtr;
 					}
 				}
 
@@ -204,7 +230,6 @@ namespace Clustering
 			{
 				//decrease size, let user know, and delete the LNode
 				size--;
-				std::cout << "\nspecific point exists in cluster\n";
 				delete newPtr;
 			}
 		}
@@ -242,6 +267,35 @@ namespace Clustering
 
 		//returns ptr so you can use in add statement
 		return ptr;
+	}
+
+	bool Clustering::operator==(const Cluster &lhs, const Cluster &rhs)
+	{
+		// first, check sizes.. pretty good indicator of not equal. Plus I need them to be equal for other test
+		if (lhs.size != rhs.size)
+			return false;
+		//should only need to test element by element. should be organized by address and value
+		//need two point pointers
+		LNodePtr lhpt;
+		LNodePtr rhpt;
+
+		lhpt = lhs.points;
+		rhpt = rhs.points;
+
+		//ends at end of list. can just compare addresses of each LNode.p
+		while (lhpt != nullptr)
+		{
+			if (lhpt->p != rhpt->p)
+				return false;
+
+			//increment both
+			lhpt = rhpt->next;
+			rhpt = rhpt->next;
+		}
+
+
+		//return true if we get through both tests without failing
+		return true;
 	}
 
 	Cluster &Cluster::operator+=(const Cluster &rhs)
@@ -287,7 +341,9 @@ namespace Clustering
 	{
 		assert (rhs.getDims() == dim);
 		//add point and return cluster
-		add(&rhs);
+		//use newPtr->p to allow use of add function
+		*newPtr->p = rhs;
+		add(newPtr->p);
 		return *this;
 	}
 
@@ -295,7 +351,9 @@ namespace Clustering
 	{
 		assert (rhs.getDims() == dim);
 		//can just remove the point and return cluster
-		remove(&rhs);
+		//use newPtr->p to allow use of remove function
+		*newPtr->p = rhs;
+		remove(newPtr->p);
 		return *this;
 	}
 

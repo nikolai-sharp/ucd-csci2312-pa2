@@ -323,6 +323,9 @@ namespace Clustering {
         //adds the final value followed by a close parentheses
         os << point.getValue(point.getDims() - 1) << ")";
 
+		// used for organize testing purposes
+		//os << &point;
+
 		//discovered that I needed to return to os variable.
 		//can not output multiple things from same cout otherwise.
 		return os;
