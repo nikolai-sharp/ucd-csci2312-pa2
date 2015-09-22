@@ -286,6 +286,7 @@ int main() {
 	std::cout << "\n              cl2 + cl1:" << (cl2 + cl1);
 	std::cout << "\n              cl2 - cl1:" << (cl2 - cl1);
 
+	std::cout << "\n            (cl1 +cl2) - (cl1-cl2) - (cl2 - cl1)" << (cl1 +cl2) - (cl1-cl2) - (cl2 - cl1);
 
 
 	delete ct3;

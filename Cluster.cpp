@@ -103,7 +103,7 @@ namespace Clustering
 	{
 		//needs to delete all dynamically allocated things
 		//set ptPtr to beginning
-		if (size < 2)
+		if (size > 1)
 		{
 			ptPtr = points;
 			//set nextPtr to ptPtr.next
@@ -133,7 +133,7 @@ namespace Clustering
 	void Cluster::add(PointPtr const &ptr)
 	{
 		//assert that point is of correct dimension, or cluster is empty
-		assert (ptr->getDims() == dim || size == 0);
+		//assert (ptr->getDims() == dim || size == 0);
 
 		//create new LNode for use in any case
 		newPtr = new LNode;
@@ -194,7 +194,7 @@ namespace Clustering
 			while (newPtr->next == nullptr && nextPtr != nullptr)
 			{
 				//Check if it fits between the two. if it does, put it there
-				if (*ptr > *ptPtr->p && *ptr <= *nextPtr->p)
+				if (*ptr >= *ptPtr->p && *ptr <= *nextPtr->p)
 				{
 					//now we want to order similar points by address, and exclude multiple equal addresses
 					// case 1 breaks if either address is equal to ptr
@@ -244,14 +244,17 @@ namespace Clustering
 		//set nextPtr to point after ptPtr to check against ptr
 		nextPtr = ptPtr->next;
 
-		// check if ptPtr = ptr
+		// check if ptPtr == ptr address
 		if (ptPtr->p == ptr)
 		{
 			//make points = nextPtr and delete ptPtr
 			points = nextPtr;
 
+			//decrement size here too
+			size --;
 			delete ptPtr;
 		}
+
 
 		//loop through and check values
 		while (ptPtr->next != nullptr)
@@ -313,7 +316,7 @@ namespace Clustering
 
 	const Cluster Clustering::operator+(const Cluster &lhs, const Cluster &rhs)
 	{
-		assert (lhs.dim == rhs.dim);
+		//assert (lhs.dim == rhs.dim);
 		//create cluster.
 		Cluster sum;
 
@@ -328,7 +331,7 @@ namespace Clustering
 	//extremely similar to + not doing dynamically..
 	const Cluster Clustering::operator-(const Cluster &lhs, const Cluster &rhs)
 	{
-		assert (lhs.dim == rhs.dim);
+		//assert (lhs.dim == rhs.dim);
 		//create cluster with lhs, subtract rhs from new cluster, return new cluster.
 		Cluster diff(lhs);
 		diff -= rhs;
@@ -338,7 +341,7 @@ namespace Clustering
 
 	const Cluster Clustering::operator+(const Cluster &lhs, const PointPtr &rhs)
 	{
-		assert (lhs.dim == rhs->getDims());
+		//assert (lhs.dim == rhs->getDims());
 		//create cluster to add two together, return new cluster.
 		Cluster sum;
 		sum += lhs;
@@ -348,7 +351,7 @@ namespace Clustering
 
 	const Cluster Clustering::operator-(const Cluster &lhs, const PointPtr &rhs)
 	{
-		assert (lhs.dim == rhs->getDims());
+		//assert (lhs.dim == rhs->getDims());
 		//create cluster with lhs, -= the point, and return new cluster.
 		Cluster diff(lhs);
 		diff -= rhs;
@@ -376,7 +379,7 @@ namespace Clustering
 
 	Cluster &Cluster::operator-=(const Cluster &rhs)
 	{
-		assert (rhs.dim == dim);
+		//assert (rhs.dim == dim);
 		//I'll use nextPtr to navigate other cluster
 		LNodePtr nextPtr2;
 		nextPtr2 = rhs.points;
