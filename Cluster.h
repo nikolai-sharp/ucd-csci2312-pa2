@@ -10,6 +10,7 @@
 namespace Clustering {
 
     typedef Point *PointPtr;
+    //typedef std::shared_ptr<Point*> PointPtr;
     typedef struct LNode *LNodePtr;
 
 //    struct LNode;
@@ -75,6 +76,8 @@ namespace Clustering {
         friend const Cluster operator-(const Cluster &lhs, const PointPtr &rhs);
 
     };
+
+//     inlclude "Cluster.cpp"   //keep for templates in Cluster // don't forget to remove Cluster.cpp from CMakeLists.
 
 }
 #endif //CLUSTERING_CLUSTER_H

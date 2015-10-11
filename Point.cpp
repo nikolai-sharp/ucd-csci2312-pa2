@@ -105,7 +105,7 @@ namespace Clustering {
             //for loop to calculate distances between points and square that value, and increase sum
             for (int i = 0; i < dim; i++) {
                 distance[i] = oPoint.values[i] - values[i];//
-                distance[i] = pow(distance[i], 2); //I could have had those two on the same ling, but it would be long
+                distance[i] = distance[i] * distance[i]; //I could have had those two on the same ling, but it would be long
                 sum = sum + distance[i];
             }
 
@@ -315,13 +315,13 @@ namespace Clustering {
     std::ostream &operator<<(std::ostream &os, const Point &point)
     {
         //opens parentheses for viewing
-        os << "\n(";
+        os << "\n";
         //for loop adds each dimension followed by a comma, except for last
         for (int i = 0; i < point.getDims() - 1; i++) {
-            os << point.getValue(i) << ",";
+            os << point.getValue(i) << ", ";
         }
         //adds the final value followed by a close parentheses
-        os << point.getValue(point.getDims() - 1) << ")";
+        os << point.getValue(point.getDims() - 1);
 
 		// used for organize testing purposes
 		//os << &point;

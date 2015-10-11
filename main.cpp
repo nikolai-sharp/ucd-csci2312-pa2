@@ -123,6 +123,7 @@ int main() {
 
 	//create LNode for test
 	LNode test;
+
 	test.p = &p1;
 
 	//test LNode printing
@@ -287,6 +288,12 @@ int main() {
 	std::cout << "\n              cl2 - cl1:" << (cl2 - cl1);
 
 	std::cout << "\n            (cl1 +cl2) - (cl1-cl2) - (cl2 - cl1)" << (cl1 +cl2) - (cl1-cl2) - (cl2 - cl1);
+
+
+
+	std::cout << "\n             take point from cl1 put in cl2:\ncl1 orog:" << cl1 << "\ncl2 orig:" << cl2;
+	cl2.add(cl1.remove(&po1));
+	std::cout << "\ncl1 new:" << cl1 << "\ncl2 new:" << cl2;
 
 
 	delete ct3;

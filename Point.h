@@ -62,5 +62,7 @@ namespace Clustering {
         //friend std::istream &operator>>(std::istream &, Point &);
     };
 
+//    #inlclude "Point.cpp"   //keep for templates in Cluster // don't forget to remove Point.cpp from CMakeLists.
+
 }
 #endif //CLUSTERING_POINT_H
