@@ -3,7 +3,12 @@
 //
 
 #include <math.h>
+#include <MacTypes.h>
 //#include <cassert>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
 #include "Point.h"
 
 namespace Clustering {
@@ -314,13 +319,11 @@ namespace Clustering {
 
     std::ostream &operator<<(std::ostream &os, const Point &point)
     {
-        //opens parentheses for viewing
-        os << "\n";
         //for loop adds each dimension followed by a comma, except for last
         for (int i = 0; i < point.getDims() - 1; i++) {
             os << point.getValue(i) << ", ";
         }
-        //adds the final value followed by a close parentheses
+        //adds the final value
         os << point.getValue(point.getDims() - 1);
 
 		// used for organize testing purposes
@@ -330,6 +333,27 @@ namespace Clustering {
 		//can not output multiple things from same cout otherwise.
 		return os;
     }
+
+    std::istream &Clustering::operator>>(std::istream &is, Point &point)
+    {
+        std::string line;
+        getline(is, line);
+        std::stringstream lineStream(line);
+        std::string value;
+        double d;
+
+        int i = 0;
+        while (getline(lineStream, value, ',')) {
+            d = stod(value);
+
+            //std::cout << "Value: " << d << std::endl;
+
+            point.setValue(i++,d);
+        }
+
+        return is;
+    }
+
 }
 
 

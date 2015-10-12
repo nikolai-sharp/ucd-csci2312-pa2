@@ -2,8 +2,9 @@
 // Created by Nikolai Sharp on 9/20/15.
 //
 
-#include <cassert>
+
 #include "Cluster.h"
+
 
 
 namespace Clustering
@@ -18,13 +19,13 @@ namespace Clustering
 		ptr = cluster.points;
 
 		//announce beginning:
-		os << "\ncluster size:" << cluster.size << "dims:" << cluster.dim;
+		//os << "\ncluster size:" << cluster.size << "dims:" << cluster.dim;
 
 		//while loop stops at end
 		while (ptr != nullptr)
 		{
 			//print associated point
-			os << *ptr->p;
+			os << std::endl << *ptr->p << " : ";
 
 			//increment point
 			ptr = ptr->next;
@@ -32,6 +33,7 @@ namespace Clustering
 		//os << std::endl;
 		return os;
 	}
+
 
 	//I realize now after all of this that I could have used the add function.. oh well.
 	Cluster::Cluster(const Cluster &cluster)
@@ -51,7 +53,7 @@ namespace Clustering
 		this->size++;
 
 		//now create new linked list of LNodes that point to same points as other cluster
-		while(nextPtr != nullptr)
+		while (nextPtr != nullptr)
 		{
 			//create new LNode and point it to next point
 			newPtr = new LNode;
@@ -160,7 +162,7 @@ namespace Clustering
 			dim = endPtr->p->getDims();
 		}
 
-		//Next we check if point will be added at the very beginning and put it there
+			//Next we check if point will be added at the very beginning and put it there
 		else if (*ptr < *points->p)
 		{
 			//point new LNode to current head
@@ -170,7 +172,7 @@ namespace Clustering
 			points = newPtr;
 		}
 
-		//Now check if point should be added at end
+			//Now check if point should be added at end
 		else if (*ptr > *endPtr->p)
 		{
 			//point current end to new end
@@ -181,7 +183,7 @@ namespace Clustering
 			endPtr->next = nullptr;
 		}
 
-		//last case, find where it should go anywhere in between the previous two
+			//last case, find where it should go anywhere in between the previous two
 		else
 		{
 			//set ptPtr to head. we will check between each two points
@@ -202,7 +204,7 @@ namespace Clustering
 					{
 						break;
 					}
-					//case 2 if
+						//case 2 if
 					else if ((*ptr == *nextPtr->p && ptr < nextPtr->p) || *ptr < *nextPtr->p)
 					{
 						//put it there
@@ -216,7 +218,7 @@ namespace Clustering
 					}
 				}
 
-				//if not, shift two over
+					//if not, shift two over
 				else
 				{
 					ptPtr = ptPtr->next;
@@ -251,7 +253,7 @@ namespace Clustering
 			points = nextPtr;
 
 			//decrement size here too
-			size --;
+			size--;
 			delete ptPtr;
 		}
 
@@ -406,4 +408,6 @@ namespace Clustering
 		remove(rhs);
 		return *this;
 	}
+
+
 }

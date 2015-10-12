@@ -5,7 +5,13 @@
 #ifndef CLUSTERING_CLUSTER_H
 #define CLUSTERING_CLUSTER_H
 
+#include <cassert>
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 #include "Point.h"
+
 
 namespace Clustering {
 
@@ -24,6 +30,7 @@ namespace Clustering {
 
 
     class Cluster {
+    private:
         int size;
         //Using this as the head
         LNodePtr points;
@@ -37,6 +44,11 @@ namespace Clustering {
         LNodePtr newPtr;
         //add member variable to hold number of dimensions this cluster holds
         int dim;
+        // release points, tells class whether or not it can deallocate points
+        bool __release_points;
+        //centroid
+        Point __centroid;
+
 
     public:
         Cluster() : size(0), points(nullptr), endPtr(nullptr), dim(0){};
@@ -53,8 +65,28 @@ namespace Clustering {
         // Overloaded operators
 
         // IO
-        friend std::ostream &operator<<(std::ostream &, const Cluster &);
-        //friend std::istream &operator>>(std::istream &, Cluster &); //not sure what to do with this. not in inst.
+        friend std::ostream &operator<<(std::ostream &, const Cluster & cluster);
+        friend std::istream &operator>>(std::istream &is, Cluster &cluster)
+        {
+            std::string line;
+            while (std::getline(is, line))
+            {
+                std::string line2 = line;
+                std::stringstream lineStream(line);
+                std::string value;
+                int i = 0;
+                while (getline(lineStream, value, ','))
+                {
+                    i++;
+                }
+                Point *tPoint = new Point(i);
+                std::stringstream lineStream2(line2);
+
+                lineStream2 >> *tPoint;
+                cluster += tPoint;
+            }
+            return is;
+        }
 
         // Set-preserving operators (do not duplicate points in the space)
         // - Friends
@@ -74,6 +106,11 @@ namespace Clustering {
 
         friend const Cluster operator+(const Cluster &lhs, const PointPtr &rhs);
         friend const Cluster operator-(const Cluster &lhs, const PointPtr &rhs);
+
+        //centroid functions
+        void setCentroid(const Point&);
+        const Point getCenroid() {return __centroid;}
+
 
     };
 

@@ -57,9 +57,7 @@ namespace Clustering {
         friend bool operator>=(const Point &, const Point &);
 
         friend std::ostream &operator<<(std::ostream &, const Point &);
-
-        //I don't really see how I might use this. It is not specifically in the instructions.
-        //friend std::istream &operator>>(std::istream &, Point &);
+        friend std::istream &operator>>(std::istream &, Point &);
     };
 
 //    #inlclude "Point.cpp"   //keep for templates in Cluster // don't forget to remove Point.cpp from CMakeLists.
