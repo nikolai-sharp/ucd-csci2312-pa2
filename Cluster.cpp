@@ -25,7 +25,7 @@ namespace Clustering
 		while (ptr != nullptr)
 		{
 			//print associated point
-			os << std::endl << *ptr->p << " : ";
+			os << *ptr->p << " : " << cluster.__id;
 
 			//increment point
 			ptr = ptr->next;
@@ -34,10 +34,20 @@ namespace Clustering
 		return os;
 	}
 
+	Cluster::Cluster()
+	{
+		size = 0;
+		points = nullptr;
+		endPtr = nullptr;
+		dim = 0;
+		__id = generateID();
+	}
 
 	//I realize now after all of this that I could have used the add function.. oh well.
 	Cluster::Cluster(const Cluster &cluster)
 	{
+		//set id and increment number of clusters
+		__id = generateID();
 		//point points to first element and ptptr to next element in cluster
 		points = new LNode;
 		points->p = cluster.points->p;
@@ -112,8 +122,10 @@ namespace Clustering
 			nextPtr = ptPtr->next;
 			while (ptPtr != nullptr)
 			{
-				//delete LNode
+				//delete LNode and associated points
+				delete ptPtr->p;
 				delete ptPtr;
+
 
 				//set ptPtr to nextPtr
 				ptPtr = nextPtr;
@@ -145,6 +157,9 @@ namespace Clustering
 
 		//set newPtr to point to nullpointer (used later in while loop)
 		newPtr->next = nullptr;
+
+		//invalidate centroid
+		__centroidIsValid = false;
 
 		//First we check if cluster is empty. if so, we just make the new point the first LNode
 		if (size == 0)
@@ -226,11 +241,16 @@ namespace Clustering
 				}
 			}
 			//if this got to the end, then the point was not added
+			//new note: considering the new kmeans logic, we should never get here.
 			if (newPtr->next == nullptr)
 			{
 				//decrease size, let user know, and delete the LNode
 				size--;
 				delete newPtr;
+				std::cout << "\n\nERROR: point was not added. Check logic and try again.\n\n";
+				//this should never happen, but if the point was not added, centroid is still valid
+				__centroidIsValid = true;
+
 			}
 		}
 
@@ -254,32 +274,40 @@ namespace Clustering
 
 			//decrement size here too
 			size--;
+
+			//invalidate centroid
+			__centroidIsValid = false;
+
 			delete ptPtr;
 		}
 
-
-		//loop through and check values
-		while (ptPtr->next != nullptr)
+		else
 		{
-			if (nextPtr->p == ptr)
+			//loop through and check values
+			while (ptPtr->next != nullptr)
 			{
-				//point ptPtr to nextPtr.next to cut out nextPtr
-				ptPtr->next = nextPtr->next;
+				if (nextPtr->p == ptr)
+				{
+					//point ptPtr to nextPtr.next to cut out nextPtr
+					ptPtr->next = nextPtr->next;
 
-				//decrement size
-				size--;
+					//decrement size
+					size--;
 
-				//delete LNode link in nextPtr
-				delete nextPtr;
+					//delete LNode link in nextPtr
+					delete nextPtr;
 
-				//break out of while loop
-				break;
-			}
-			else
-			{
-				//increment both
-				ptPtr = ptPtr->next;
-				nextPtr = nextPtr->next;
+					//invalidate centroid
+					__centroidIsValid = false;
+					//break out of while loop
+					break;
+				}
+				else
+				{
+					//increment both
+					ptPtr = ptPtr->next;
+					nextPtr = nextPtr->next;
+				}
 			}
 		}
 
@@ -410,4 +438,68 @@ namespace Clustering
 	}
 
 
+	void Cluster::setCentroid(const Point &point)
+	{
+		__centroid = point;
+		__centroidIsValid = true;
+	}
+
+
+	void Cluster::computeCentroid()
+	{
+		PointPtr tPoint = new Point(dim);
+
+		//set ptPtr to beginning
+		ptPtr = points;
+		while (ptPtr != nullptr)
+		{
+			*tPoint = *tPoint + *ptPtr->p;
+			ptPtr = ptPtr->next;
+		}
+		*tPoint /= size;
+
+		setCentroid(*tPoint);
+
+
+		delete tPoint;
+
+	}
+
+	void Cluster::pickPoints(int k, PointPtr pointArray)
+	{
+		ptPtr = points;
+		//take the last point minus the first point and divide it by k to get the average difference between points
+		//adding these together will allow a linear set of points to begin testing. Not perfectly evenly disbursed
+		//but better than nothing.
+		PointPtr tPoint = new Point((*endPtr->p - *ptPtr->p)/k);
+		for (int i = 0; i < k; i++)
+		{
+			//offset ptptr by 1/2
+			//std::cout << (*ptPtr->p - *tPoint/2) + *tPoint*(i+1);
+			pointArray[i] = (*ptPtr->p - *tPoint/2) + *tPoint*(i+1);
+		}
+	}
+
+	PointPtr &Cluster::operator[](int i)
+	{
+		if (i < size && i >= 0)
+		{
+			int index = 0;
+			ptPtr = points;
+			while (ptPtr != nullptr)
+			{
+				if (index == i)
+				{
+					return ptPtr->p;
+
+				}
+				else
+				{
+					index++;
+					ptPtr = ptPtr->next;
+				}
+			}
+		}
+
+	}
 }

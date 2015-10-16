@@ -58,6 +58,9 @@ namespace Clustering {
 
         friend std::ostream &operator<<(std::ostream &, const Point &);
         friend std::istream &operator>>(std::istream &, Point &);
+
+        //nabbed this during class. not sure what it's useful for yet.
+        double &operator[](int index){return values[index - 1];}
     };
 
 //    #inlclude "Point.cpp"   //keep for templates in Cluster // don't forget to remove Point.cpp from CMakeLists.

@@ -48,10 +48,15 @@ namespace Clustering {
         bool __release_points;
         //centroid
         Point __centroid;
+        bool __centroidIsValid;
+        //cluster id
+        int __id;
 
 
     public:
-        Cluster() : size(0), points(nullptr), endPtr(nullptr), dim(0){};
+        //declaration of Move class:
+        friend class Move; //TODO check this
+        Cluster();
 
         // The big three: cpy ctor, overloaded operator=, dtor
         Cluster(const Cluster &);
@@ -107,10 +112,31 @@ namespace Clustering {
         friend const Cluster operator+(const Cluster &lhs, const PointPtr &rhs);
         friend const Cluster operator-(const Cluster &lhs, const PointPtr &rhs);
 
-        //centroid functions
+        //KMeans and centroid functions
         void setCentroid(const Point&);
         const Point getCenroid() {return __centroid;}
+        void computeCentroid();
+        bool centroidIsValid() {return __centroidIsValid;}
+        void pickPoints(int k, PointPtr pointArray);
+        int getSize() {return size;}
 
+        //id functions
+        int getID() {return __id;}
+        int generateID() {static int numberOfClusters = 0; return  ++numberOfClusters;}
+
+        PointPtr &operator[](int i); //use to access points in Kmeans
+
+
+
+
+
+        class Move
+        {
+        public:
+            Move(const PointPtr &ptr, Cluster &from, Cluster &to) {perform(ptr, from, to);}
+        private:
+            void perform(const PointPtr &ptr, Cluster &from, Cluster &to) {to.add(from.remove(ptr));}
+        };
 
     };
 

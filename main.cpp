@@ -300,19 +300,63 @@ int main() {
 
 	std::ifstream csv("points.txt");
 
-	Cluster *universe = new Cluster();
-
+	//Cluster *universe = new Cluster();
+	Cluster universe;
 	if (csv.is_open())
 	{
 
-		csv >> *universe;
+		csv >> universe;
 	}
 
-	std::cout << *universe;
+	Point point2(5);
+	for (int i = 0; i < 5; i++)
+		point2.setValue(i, i + 3);
+
+	//universe->add(&point2);
+	universe.add(&point2);
+	//std::cout << *universe;
+	std::cout << universe;
 
 
+
+	//universe->computeCentroid();
+	universe.computeCentroid();
+
+	//std::cout << universe->getCenroid() << std::endl << universe->centroidIsValid();
+	std::cout << universe.getCenroid() << std::endl << universe.centroidIsValid();
+
+	Cluster *cluster1 = new Cluster;
+	//Point * ptr = universe->points;
+
+	//Cluster::Move(&point2, *universe, *cluster1);
+	Cluster::Move(&point2, universe, *cluster1);
+	//Point E1(10);
+
+	//std::cout << *universe << *cluster1;
+	std::cout << universe << *cluster1;
+
+	std::cout << std::endl << std::endl << *universe[3];
+
+	//Point pick[4];
+	PointPtr pick = new Point[4];
+	std::cout << std::endl;
+	universe.pickPoints(4, pick);
+
+	std::cout << pick[2]; //TODO figure out error
+
+//	for (int i = 0; i < 2; i++)
+//	{
+//		std::cout << std::endl << *(pick + i);
+//	}
+
+	//std::cout << std::endl << E1;
+
+	//delete universe;
+	delete[] pick;
+	delete cluster1;
 //	delete ct3;
 //	delete ct2;
 //	delete pt1;
     return 0;
 }
+

@@ -9,7 +9,9 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <iomanip>
 #include "Point.h"
+
 
 namespace Clustering {
 
@@ -19,6 +21,10 @@ namespace Clustering {
     Point::Point(int num) {
         dim = num;
         values = new double[dim];
+
+        //for loop to set all values to 0
+//        for (int i = 0; i < dim; i++)
+//            values[i] = 0;
     }
 
 //Second constructor takes in a number of dimensions as well as a pointer to an existing point   TODO ?
@@ -66,7 +72,7 @@ namespace Clustering {
 		}
         else
         {
-            std::cout << "\nthat is not possible";
+            //std::cout << "\nthat is not possible1"; //TODO why?
             return *this;
         }
 
@@ -87,7 +93,7 @@ namespace Clustering {
         if (sDim >= 0 && sDim < this->getDims())
             *(values + sDim) = val;
         else
-            std::cout << "\nthat is not possible";
+            std::cout << "\nthat is not possible2";
     }
 
 //Returns value at specific dimension of point
@@ -96,7 +102,7 @@ namespace Clustering {
         if (sDim >= 0 && sDim < this->getDims())
             return *(values + sDim);
         else
-            std::cout << "\nthat is not possible";
+            std::cout << "\nthat is not possible3";
     }
 
 //Calculates distance between two like points
@@ -121,7 +127,7 @@ namespace Clustering {
 
         else        //TODO ?
         {
-            std::cout << "\nthat is not possible";
+            std::cout << "\nthat is not possible4";
         }
     }
 
@@ -150,11 +156,11 @@ namespace Clustering {
 
 // returns a temporary box with values multiplied by rhs
     const Point Point::operator*(double rhs) const {
-        Point p(this->dim);
+        Point p(dim);
         //I can't think of an easy way to initialize p to the values of this.
         //So I just re wrote the code
         for (int i = 0; i < p.dim; i++) {
-            p.values[i] = this->values[i];
+            p.values[i] = values[i];
         }
 
         //reuses *= code
@@ -166,11 +172,11 @@ namespace Clustering {
 // returns a box with the values divided by rhs
     const Point Point::operator/(double rhs) const
     {
-        Point p(this->dim);
+        Point p(dim);
         //I can't think of an easy way to initialize p to the values of this.
         //So I just re wrote the code
         for (int i = 0; i < p.dim; i++) {
-            p.values[i] = this->values[i];
+            p.values[i] = values[i];
         }
 
         //reuses /= code
@@ -188,7 +194,7 @@ namespace Clustering {
                 point.values[i] += point1.values[i];
             }
         else
-            std::cout << "\nthat is not possible";
+            std::cout << "\nthat is not possible5";
         return point;
     }
 
@@ -201,7 +207,7 @@ namespace Clustering {
                 point.values[i] -= point1.values[i];
             }
         else
-            std::cout << "\nthat is not possible";
+            std::cout << "\nthat is not possible6";
         return point;
     }
 
@@ -319,6 +325,7 @@ namespace Clustering {
 
     std::ostream &operator<<(std::ostream &os, const Point &point)
     {
+        os << std::endl;
         //for loop adds each dimension followed by a comma, except for last
         for (int i = 0; i < point.getDims() - 1; i++) {
             os << point.getValue(i) << ", ";
@@ -355,6 +362,3 @@ namespace Clustering {
     }
 
 }
-
-
-
