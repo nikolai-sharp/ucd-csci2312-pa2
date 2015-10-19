@@ -43,7 +43,7 @@ namespace Clustering {
         //used to create new LNode
         LNodePtr newPtr;
         //add member variable to hold number of dimensions this cluster holds
-        int dim;
+        unsigned int dim;
         // release points, tells class whether or not it can deallocate points
         bool __release_points;
         //centroid
@@ -119,6 +119,11 @@ namespace Clustering {
         bool centroidIsValid() {return __centroidIsValid;}
         void pickPoints(int k, PointPtr pointArray);
         int getSize() {return size;}
+        double intraClusterDistance() const;
+        friend double interClusterDistance(const Cluster &c1, const Cluster &c2);
+        int getClusterEdges() {return size * (size - 1) / 2;}
+        friend double interClusterEdges(const Cluster &c1, const Cluster &c2) {return c1.size*c2.size;}
+
 
         //id functions
         int getID() {return __id;}

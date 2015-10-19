@@ -357,8 +357,6 @@ namespace Clustering {
 
             point.setValue(i++,d);
         }
-
         return is;
     }
-
 }

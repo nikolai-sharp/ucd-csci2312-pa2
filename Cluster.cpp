@@ -489,10 +489,7 @@ namespace Clustering
 			while (ptPtr != nullptr)
 			{
 				if (index == i)
-				{
 					return ptPtr->p;
-
-				}
 				else
 				{
 					index++;
@@ -502,4 +499,70 @@ namespace Clustering
 		}
 
 	}
+
+	//rather than use the sum of all of the distanes between points and dividing that by 2, which would
+	//iterate n^2 times, this function increments the point we are working with and doesn't add distances twice
+	//coming to a function runs (n^2+n)/2 times. Should be useful in larger clusters, and run almost half the
+	//number of times
+	double Cluster::intraClusterDistance() const
+	{
+		double d = 0;
+
+		//iterator keeps track of the first while loop.
+		LNodePtr it = points;
+
+		//this iterator keeps track of the starting point of the next while loop
+		//starts at points.next because we do not need a points distance to itself(0)
+		LNodePtr  itT = points->next;
+
+		//this iterator keeps track of the second while loop,
+		LNodePtr it2;
+
+		while (it != nullptr)
+		{
+			it2 = itT;
+			while (it2 != nullptr)
+			{
+				d = d + it->p->distanceTo(*it2->p);
+				it2 = it2->next;
+			}
+			//all of the distances associated with 'it' have been added. increment to next
+			it = it->next;
+			//increment itT to one after it, if itT is not already nullptr
+			if (itT != nullptr)
+				itT = itT->next;
+
+		}
+		//return the average, which is the sum of all of the distances divided by the size of the cluster;
+		return d/size;
+	}
+
+	double Clustering::interClusterDistance(const Cluster &c1, const Cluster &c2)
+	{
+		//for first loop (navigates between points in c1)
+		LNodePtr it = c1.points;
+		//for inner loop(navigates between points in c2
+		LNodePtr it2;
+
+		//sum of distances
+		double d = 0;
+
+		while (it != nullptr)
+		{
+			//set it2 to beginning
+			it2 = c2.points;
+			while (it2 != nullptr)
+			{
+				d += it2->p->distanceTo(*it->p);
+				it2 = it2->next;
+			}
+			it = it->next;
+		}
+		//divide by the number of connections made and return
+		return d/(c1.size*c2.size);
+	}
+
+
+
+
 }

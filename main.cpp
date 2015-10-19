@@ -352,6 +352,16 @@ int main() {
 	//std::cout << std::endl << E1;
 
 	//delete universe;
+
+	std::cout << "\nuniverse intra cluster distances average:" << universe.intraClusterDistance();
+	std::cout << "\ncluster1 intra cluster distances average:" << cluster1->intraClusterDistance();
+	std::cout << std::endl;
+
+	std::cout << "\ninter cluster distance:" << interClusterDistance(universe, *cluster1);
+	universe.computeCentroid();
+	cluster1->computeCentroid();
+	std::cout << "\ninter cluster distance:" << myinterClusterDistance(universe, *cluster1);
+
 	delete[] pick;
 	delete cluster1;
 //	delete ct3;
