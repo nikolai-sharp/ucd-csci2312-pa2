@@ -2,6 +2,8 @@
 #include <fstream>
 #include "Point.h"
 #include "Cluster.h"
+#include "KMeans.h"
+
 using namespace Clustering;
 
 int main() {
@@ -295,78 +297,110 @@ int main() {
 //	std::cout << "\n             take point from cl1 put in cl2:\ncl1 orog:" << cl1 << "\ncl2 orig:" << cl2;
 //	cl2.add(cl1.remove(&po1));
 //	std::cout << "\ncl1 new:" << cl1 << "\ncl2 new:" << cl2;
-
-
-
-	std::ifstream csv("points.txt");
-
-	//Cluster *universe = new Cluster();
-	Cluster universe;
-	if (csv.is_open())
-	{
-
-		csv >> universe;
-	}
-
-	Point point2(5);
-	for (int i = 0; i < 5; i++)
-		point2.setValue(i, i + 3);
-
-	//universe->add(&point2);
-	universe.add(&point2);
-	//std::cout << *universe;
-	std::cout << universe;
-
-
-
-	//universe->computeCentroid();
-	universe.computeCentroid();
-
-	//std::cout << universe->getCenroid() << std::endl << universe->centroidIsValid();
-	std::cout << universe.getCenroid() << std::endl << universe.centroidIsValid();
-
-	Cluster *cluster1 = new Cluster;
-	//Point * ptr = universe->points;
-
-	//Cluster::Move(&point2, *universe, *cluster1);
-	Cluster::Move(&point2, universe, *cluster1);
-	//Point E1(10);
-
-	//std::cout << *universe << *cluster1;
-	std::cout << universe << *cluster1;
-
-	std::cout << std::endl << std::endl << *universe[3];
-
-	//Point pick[4];
-	PointPtr pick = new Point[4];
-	std::cout << std::endl;
-	universe.pickPoints(4, pick);
-
-	std::cout << pick[2]; //TODO figure out error
-
+//
+//
+//
+//	std::ifstream csv("points.txt");
+//
+//	//Cluster *universe = new Cluster();
+//	Cluster universe(5);
+//	if (csv.is_open())
+//	{
+//
+//		csv >> universe;
+//	}
+//
+//	Point point2(5);
+//	for (int i = 0; i < 5; i++)
+//		point2.setValue(i, i + 3);
+//
+//	//universe->add(&point2);
+//	universe.add(&point2);
+//	//std::cout << *universe;
+//	std::cout << universe;
+//
+//
+//
+//	//universe->computeCentroid();
+//	universe.computeCentroid();
+//
+//	//std::cout << universe->getCenroid() << std::endl << universe->centroidIsValid();
+//	std::cout << universe.getCenroid() << std::endl << universe.centroidIsValid();
+//
+//	Cluster *cluster1 = new Cluster(5);
+//	//Point * ptr = universe->points;
+//
+//	//Cluster::Move(&point2, *universe, *cluster1);
+//	Cluster::Move(&point2, universe, *cluster1);
+//	//Point E1(10);
+//
+//	//std::cout << *universe << *cluster1;
+//	std::cout << universe << *cluster1;
+//
+//	std::cout << std::endl << std::endl << *universe[3];
+//
+//	//Point pick[4];
+//	PointPtr pick = new Point[4];
+//	std::cout << std::endl;
+//	universe.pickPoints(4, pick);
+//
+//	std::cout << pick[2]; //TODO figure out error
+//
 //	for (int i = 0; i < 2; i++)
 //	{
 //		std::cout << std::endl << *(pick + i);
 //	}
+//
+////	std::cout << std::endl << E1;
+//
+////	delete universe;
+//
+//	std::cout << "\nuniverse intra cluster distances average:" << universe.intraClusterDistance();
+//	std::cout << "\ncluster1 intra cluster distances average:" << cluster1->intraClusterDistance();
+//	std::cout << std::endl;
+//
+//	std::cout << "\ninter cluster distance:" << interClusterDistance(universe, *cluster1);
+//	universe.computeCentroid();
+//	cluster1->computeCentroid();
 
-	//std::cout << std::endl << E1;
 
-	//delete universe;
+	//Begin KMeans testing
 
-	std::cout << "\nuniverse intra cluster distances average:" << universe.intraClusterDistance();
-	std::cout << "\ncluster1 intra cluster distances average:" << cluster1->intraClusterDistance();
-	std::cout << std::endl;
 
-	std::cout << "\ninter cluster distance:" << interClusterDistance(universe, *cluster1);
-	universe.computeCentroid();
-	cluster1->computeCentroid();
-	std::cout << "\ninter cluster distance:" << myinterClusterDistance(universe, *cluster1);
 
-	delete[] pick;
-	delete cluster1;
+    std::ifstream csv("points.txt");
+
+
+
+    KMeans instance(5);
+    csv >> instance;
+
+    instance.run(4);
+
+    std::cout << instance;
+
+
+
+
+
+
+
+//
+//	delete[] pick;
+//	delete cluster1;
 //	delete ct3;
 //	delete ct2;
 //	delete pt1;
     return 0;
 }
 
+//    std::istream is = csv;
+//    std::string line;
+//    getline(is, line);
+//    std::stringstream lineStream(line);
+//    std::string value;
+//    int i = 0;
+//    while (getline(lineStream, value, ','))
+//    {
+//        i++;
+//    }

@@ -56,7 +56,9 @@ namespace Clustering {
     public:
         //declaration of Move class:
         friend class Move; //TODO check this
-        Cluster();
+        //Cluster();
+
+        Cluster(unsigned int d);
 
         // The big three: cpy ctor, overloaded operator=, dtor
         Cluster(const Cluster &);
@@ -116,12 +118,12 @@ namespace Clustering {
         void setCentroid(const Point&);
         const Point getCenroid() {return __centroid;}
         void computeCentroid();
-        bool centroidIsValid() {return __centroidIsValid;}
+        bool centroidIsValid() {bool truth = __centroidIsValid; return truth;}
         void pickPoints(int k, PointPtr pointArray);
-        int getSize() {return size;}
+        int getSize() {int truth = size; return truth;}
         double intraClusterDistance() const;
         friend double interClusterDistance(const Cluster &c1, const Cluster &c2);
-        int getClusterEdges() {return size * (size - 1) / 2;}
+        double getClusterEdges() {return size * (size - 1) / 2;}
         friend double interClusterEdges(const Cluster &c1, const Cluster &c2) {return c1.size*c2.size;}
 
 

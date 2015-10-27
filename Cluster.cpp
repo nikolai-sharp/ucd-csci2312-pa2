@@ -34,13 +34,16 @@ namespace Clustering
 		return os;
 	}
 
-	Cluster::Cluster()
+	//I want to keep this.
+	Cluster::Cluster(unsigned int d)
 	{
 		size = 0;
 		points = nullptr;
 		endPtr = nullptr;
-		dim = 0;
+		dim = d;
 		__id = generateID();
+		__centroidIsValid = false;
+
 	}
 
 	//I realize now after all of this that I could have used the add function.. oh well.
@@ -48,40 +51,49 @@ namespace Clustering
 	{
 		//set id and increment number of clusters
 		__id = generateID();
-		//point points to first element and ptptr to next element in cluster
-		points = new LNode;
-		points->p = cluster.points->p;
-		//nextPtr will navigate other cluster. if only one point in list, nextPtr will = nullptr
-		nextPtr = cluster.points->next;
-		//endPtr will take up the rear behind newPtr
-		endPtr = points;
 
-		//set dims
-		dim = cluster.dim;
-
-		//increment size
-		this->size++;
-
-		//now create new linked list of LNodes that point to same points as other cluster
-		while (nextPtr != nullptr)
+		if (cluster.size > 0)
 		{
-			//create new LNode and point it to next point
-			newPtr = new LNode;
-			newPtr->p = nextPtr->p;
-
-			//point previous LNode to new
-			endPtr->next = newPtr;
-
-			//set newPtr->next to point to nullPtr in case nextPtr->next is null as well
-			newPtr->next = nullptr;
-
-			//increment ptPtr and nextPtr
-			endPtr = endPtr->next;
-			nextPtr = nextPtr->next;
+			//point points to first element and ptptr to next element in cluster
+			points = new LNode;
+			points->p = cluster.points->p;
+			//nextPtr will navigate other cluster. if only one point in list, nextPtr will = nullptr
+			nextPtr = cluster.points->next;
+			//endPtr will take up the rear behind newPtr
+			endPtr = points;
+			//set dims
+			dim = cluster.dim;
 
 			//increment size
 			this->size++;
+
+			//now create new linked list of LNodes that point to same points as other cluster
+			while (nextPtr != nullptr)
+			{
+				//create new LNode and point it to next point
+				newPtr = new LNode;
+				newPtr->p = nextPtr->p;
+				//point previous LNode to new
+				endPtr->next = newPtr;
+				//set newPtr->next to point to nullPtr in case nextPtr->next is null as well
+				newPtr->next = nullptr;
+
+				//increment ptPtr and nextPtr
+				endPtr = endPtr->next;
+				nextPtr = nextPtr->next;
+
+				//increment size
+				this->size++;
+			}
 		}
+		else
+		{
+			size = 0;
+			points = nullptr;
+			endPtr = nullptr;
+			dim = cluster.dim;
+		}
+
 	}
 
 	Cluster &Cluster::operator=(const Cluster &cluster) //todo
@@ -106,6 +118,7 @@ namespace Clustering
 
 			nextPtr2 = nextPtr2->next;
 		}
+
 
 
 		return *this;
@@ -140,6 +153,7 @@ namespace Clustering
 		}
 		else if (size == 1)
 		{
+			delete points->p;
 			delete points;
 		}
 	}
@@ -348,7 +362,7 @@ namespace Clustering
 	{
 		//assert (lhs.dim == rhs.dim);
 		//create cluster.
-		Cluster sum;
+		Cluster sum(lhs.dim);
 
 		//add lhs and rhs to sum
 		sum += rhs;
@@ -373,7 +387,7 @@ namespace Clustering
 	{
 		//assert (lhs.dim == rhs->getDims());
 		//create cluster to add two together, return new cluster.
-		Cluster sum;
+		Cluster sum(lhs.dim);
 		sum += lhs;
 		sum += rhs;
 		return sum;
@@ -441,7 +455,7 @@ namespace Clustering
 	void Cluster::setCentroid(const Point &point)
 	{
 		__centroid = point;
-		__centroidIsValid = true;
+		//__centroidIsValid = true;
 	}
 
 
@@ -460,6 +474,7 @@ namespace Clustering
 
 		setCentroid(*tPoint);
 
+		__centroidIsValid = true;
 
 		delete tPoint;
 
@@ -468,15 +483,49 @@ namespace Clustering
 	void Cluster::pickPoints(int k, PointPtr pointArray)
 	{
 		ptPtr = points;
-		//take the last point minus the first point and divide it by k to get the average difference between points
+		PointPtr maxPtr = ptPtr->p, minPtr = ptPtr->p;
+		double max, min;
+		//add up dimensions of point
+		for (int i = 0; i < dim; i++)
+		{
+			max += (*ptPtr->p)[i];
+		}
+		min = max;
+
+		ptPtr = ptPtr->next;
+
+		//find the points with the smallest and largest sum of values
+		while (ptPtr != nullptr)
+		{
+			double vSum = 0;
+			for (int i = 0; i < dim; i++)
+			{
+				vSum += (*ptPtr->p)[i];
+			}
+			std::cout << vSum << std::endl;
+			if (vSum > max)
+			{
+				max = vSum;
+				maxPtr = ptPtr->p;
+			}
+			else if (vSum < min)
+			{
+				min = vSum;
+				minPtr = ptPtr->p;
+			}
+
+			ptPtr = ptPtr->next;
+		}
+
+		//subtract minPtr from maxPtr and divide by k to
 		//adding these together will allow a linear set of points to begin testing. Not perfectly evenly disbursed
 		//but better than nothing.
-		PointPtr tPoint = new Point((*endPtr->p - *ptPtr->p)/k);
+		PointPtr tPoint = new Point((*maxPtr - *minPtr)/k);
 		for (int i = 0; i < k; i++)
 		{
 			//offset ptptr by 1/2
-			//std::cout << (*ptPtr->p - *tPoint/2) + *tPoint*(i+1);
-			pointArray[i] = (*ptPtr->p - *tPoint/2) + *tPoint*(i+1);
+			//std::cout << (minPtr - *tPoint/2) + *tPoint*(i+1);
+			pointArray[i] = (*minPtr - *tPoint/2) + *tPoint*(i+1);
 		}
 	}
 
@@ -533,8 +582,9 @@ namespace Clustering
 				itT = itT->next;
 
 		}
-		//return the average, which is the sum of all of the distances divided by the size of the cluster;
-		return d/size;
+		//return the average, which is the sum of all of the distances divided by the intra cluster edges
+		double edges = size * (size-1)/2;
+		return d/edges;
 	}
 
 	double Clustering::interClusterDistance(const Cluster &c1, const Cluster &c2)
