@@ -35,7 +35,7 @@ namespace Clustering
 	}
 
 	//I want to keep this.
-	Cluster::Cluster(unsigned int d)
+	Cluster::Cluster(unsigned int d): __centroid(d)
 	{
 		size = 0;
 		points = nullptr;
@@ -44,13 +44,14 @@ namespace Clustering
 		__id = generateID();
 		__centroidIsValid = false;
 
+
 	}
 
 	//I realize now after all of this that I could have used the add function.. oh well.
-	Cluster::Cluster(const Cluster &cluster)
+	Cluster::Cluster(const Cluster &cluster): Cluster(cluster.dim)
 	{
 		//set id and increment number of clusters
-		__id = generateID();
+		//__id = generateID();
 
 		if (cluster.size > 0)
 		{

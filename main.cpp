@@ -377,7 +377,7 @@ int main() {
 
     instance.run(3);
 
-    std::cout << instance;
+//    std::cout << instance;
 
 
 

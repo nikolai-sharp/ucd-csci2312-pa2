@@ -27,6 +27,7 @@ namespace Clustering {
         // Accessors & mutators
         //unsigned int getDims() const { return dim; }
         void setValue(int, double);
+        void setDims(unsigned int d) {dim = d;}
         double getValue(int) const;
 
         // Functions
