@@ -188,7 +188,7 @@ namespace Clustering
 			endPtr->next = nullptr;
 
 			//set number of dimensions for cluster
-			dim = endPtr->p->getDims();
+			//dim = endPtr->p->getDims();
 		}
 
 			//Next we check if point will be added at the very beginning and put it there
@@ -263,7 +263,7 @@ namespace Clustering
 				delete newPtr;
 				std::cout << "\n\nERROR: point was not added. Check logic and try again.\n\n";
 				//this should never happen, but if the point was not added, centroid is still valid
-				__centroidIsValid = true;
+				//__centroidIsValid = true;
 
 			}
 		}
@@ -281,7 +281,7 @@ namespace Clustering
 		nextPtr = ptPtr->next;
 
 		// check if ptPtr == ptr address
-		if (ptPtr->p == ptr)
+		if (points->p == ptr)
 		{
 			//make points = nextPtr and delete ptPtr
 			points = nextPtr;
@@ -452,7 +452,7 @@ namespace Clustering
 	}
 
 
-	void Cluster::setCentroid(const Point &point)
+	void Cluster::setCentroid(Point &point)
 	{
 		__centroid = point;
 		//__centroidIsValid = true;
@@ -461,22 +461,27 @@ namespace Clustering
 
 	void Cluster::computeCentroid()
 	{
-		PointPtr tPoint = new Point(dim);
-
-		//set ptPtr to beginning
-		ptPtr = points;
-		while (ptPtr != nullptr)
+		if (size > 0)
 		{
-			*tPoint = *tPoint + *ptPtr->p;
-			ptPtr = ptPtr->next;
+			PointPtr tPoint = new Point(dim);
+
+			//set ptPtr to beginning
+			ptPtr = points;
+			while (ptPtr != nullptr)
+			{
+				*tPoint = *tPoint + *ptPtr->p;
+				ptPtr = ptPtr->next;
+			}
+			*tPoint /= size;
+//			std::cout << *tPoint;
+
+			//setCentroid(*tPoint);
+			__centroid = *tPoint;
+
+			__centroidIsValid = true;
+
+			delete tPoint;
 		}
-		*tPoint /= size;
-
-		setCentroid(*tPoint);
-
-		__centroidIsValid = true;
-
-		delete tPoint;
 
 	}
 
@@ -502,7 +507,7 @@ namespace Clustering
 			{
 				vSum += (*ptPtr->p)[i];
 			}
-			std::cout << vSum << std::endl;
+//			std::cout << vSum << std::endl;
 			if (vSum > max)
 			{
 				max = vSum;
@@ -555,36 +560,41 @@ namespace Clustering
 	//number of times
 	double Cluster::intraClusterDistance() const
 	{
-		double d = 0;
-
-		//iterator keeps track of the first while loop.
-		LNodePtr it = points;
-
-		//this iterator keeps track of the starting point of the next while loop
-		//starts at points.next because we do not need a points distance to itself(0)
-		LNodePtr  itT = points->next;
-
-		//this iterator keeps track of the second while loop,
-		LNodePtr it2;
-
-		while (it != nullptr)
+		if (size > 1)
 		{
-			it2 = itT;
-			while (it2 != nullptr)
-			{
-				d = d + it->p->distanceTo(*it2->p);
-				it2 = it2->next;
-			}
-			//all of the distances associated with 'it' have been added. increment to next
-			it = it->next;
-			//increment itT to one after it, if itT is not already nullptr
-			if (itT != nullptr)
-				itT = itT->next;
+			double d = 0;
 
+			//iterator keeps track of the first while loop.
+			LNodePtr it = points;
+
+			//this iterator keeps track of the starting point of the next while loop
+			//starts at points.next because we do not need a points distance to itself(0)
+			LNodePtr itT = points->next;
+
+			//this iterator keeps track of the second while loop,
+			LNodePtr it2;
+
+			while (it != nullptr)
+			{
+				it2 = itT;
+				while (it2 != nullptr)
+				{
+					d = d + it->p->distanceTo(*it2->p);
+					it2 = it2->next;
+				}
+				//all of the distances associated with 'it' have been added. increment to next
+				it = it->next;
+				//increment itT to one after it, if itT is not already nullptr
+				if (itT != nullptr)
+					itT = itT->next;
+
+			}
+			//return the average, which is the sum of all of the distances divided by the intra cluster edges
+			//double edges = size * (size-1)/2;
+			return d;
 		}
-		//return the average, which is the sum of all of the distances divided by the intra cluster edges
-		double edges = size * (size-1)/2;
-		return d/edges;
+		else
+			return 0;
 	}
 
 	double Clustering::interClusterDistance(const Cluster &c1, const Cluster &c2)
@@ -609,9 +619,8 @@ namespace Clustering
 			it = it->next;
 		}
 		//divide by the number of connections made and return
-		return d/(c1.size*c2.size);
+		return d;
 	}
-
 
 
 

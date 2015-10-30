@@ -78,18 +78,18 @@ namespace Clustering {
             std::string line;
             while (std::getline(is, line))
             {
-                std::string line2 = line;
+//                std::string line2 = line;
                 std::stringstream lineStream(line);
-                std::string value;
-                int i = 0;
-                while (getline(lineStream, value, ','))
-                {
-                    i++;
-                }
-                Point *tPoint = new Point(i);
-                std::stringstream lineStream2(line2);
+//                std::string value;
+//                int i = 0;
+//                while (getline(lineStream, value, ','))
+//                {
+//                    i++;
+//                }
+                Point *tPoint = new Point(cluster.dim);
+//                std::stringstream lineStream2(line2);
 
-                lineStream2 >> *tPoint;
+                lineStream >> *tPoint;
                 cluster += tPoint;
             }
             return is;
@@ -115,16 +115,16 @@ namespace Clustering {
         friend const Cluster operator-(const Cluster &lhs, const PointPtr &rhs);
 
         //KMeans and centroid functions
-        void setCentroid(const Point&);
+        void setCentroid(Point &point);
         const Point getCenroid() {return __centroid;}
         void computeCentroid();
         bool centroidIsValid() {bool truth = __centroidIsValid; return truth;}
         void pickPoints(int k, PointPtr pointArray);
-        int getSize() {int truth = size; return truth;}
+        int getSize() const {return size;}
         double intraClusterDistance() const;
         friend double interClusterDistance(const Cluster &c1, const Cluster &c2);
         double getClusterEdges() {return size * (size - 1) / 2;}
-        friend double interClusterEdges(const Cluster &c1, const Cluster &c2) {return c1.size*c2.size;}
+        friend double interClusterEdges(const Cluster &c1, const Cluster &c2) {return c1.getSize()*c2.getSize();}
 
 
         //id functions

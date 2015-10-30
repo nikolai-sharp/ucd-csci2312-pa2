@@ -18,13 +18,13 @@ namespace Clustering {
 
 //Fist constructor takes in a number of dimensions and allocates space on the heap for
 //a point with that umber of dimensions
-    Point::Point(int num) {
+    Point::Point(unsigned int num) {
         dim = num;
         values = new double[dim];
 
         //for loop to set all values to 0
-//        for (int i = 0; i < dim; i++)
-//            values[i] = 0;
+        for (int i = 0; i < dim; i++)
+            values[i] = 0;
     }
 
 //Second constructor takes in a number of dimensions as well as a pointer to an existing point   TODO ?
@@ -38,8 +38,8 @@ namespace Clustering {
     Point::Point(const Point &oPoint): Point(oPoint.dim)
     {
         //For loop copies values of oPoint into the values of this point
-        for (int i = 0; i < oPoint.dim; i++) {
-            *(values + i) = oPoint.values[i];
+        for (int i = 0; i < dim; i++) {
+            this->values[i] = oPoint.values[i];
         }
     }
 
@@ -47,37 +47,35 @@ namespace Clustering {
     Point &Point::operator=(const Point &rhs)
     {
         //only copies if the number of dimensions are the same and it is not itself
-        if ((dim == rhs.dim) && (rhs != *this))
+        if (&rhs != this)
         {
+            //std::cout << "\naddress??:" << &rhs; //THIS WAS THE BASTARD!! I had the if set to if (rhs != *this)..WRONG
+            dim = rhs.dim;
+            //if new point, creates values
+            if (values == nullptr) //changed the logic on this
+            {
+                values = new double[dim];
+            }
+                //if existing point, deletes values and recreates
+            else if (values != nullptr)
+            {
+                delete[] values;
+                values = new double[dim];
+            }
+            else
+            {
+                std::cout << "\nERROR Point operator =: values[] confused.";
+            }
             //For loop copies values of oPoint into the values of this point
             for (int i = 0; i < rhs.dim; i++) {
                 *(values + i) = rhs.values[i];
             }
             return *this;
         }
-
-			//for the case that point is empty
-		else if (this->dim == 0)
-		{
-			//set point to rhs dim
-			this->dim = rhs.dim;
-
-			//initialize dynamic array
-			this->values = new double[this->dim];
-
-			//copy values
-			for (int i = 0; i < rhs.dim; i++) {
-				*(values + i) = rhs.values[i];
-			}
-		}
         else
         {
-            //std::cout << "\nthat is not possible1"; //TODO why?
-            return *this;
+            std::cout << "\nERROR point operator= addresses matched.";
         }
-
-
-
     }
 
 
@@ -90,7 +88,7 @@ namespace Clustering {
 //I like starting with the 0th dimension. It makes more sense to me.
     void Point::setValue(int sDim, double val) {
         //check to make sure is a valid dimension
-        if (sDim >= 0 && sDim < this->getDims())
+        if (sDim >= 0 && sDim < dim)
             *(values + sDim) = val;
         else
             std::cout << "\nthat is not possible2";
@@ -99,7 +97,7 @@ namespace Clustering {
 //Returns value at specific dimension of point
     double Point::getValue(int sDim) const {
         //check if is valid dimension
-        if (sDim >= 0 && sDim < this->getDims())
+        if (sDim >= 0 && sDim < dim)
             return *(values + sDim);
         else
             std::cout << "\nthat is not possible3";
@@ -215,130 +213,130 @@ namespace Clustering {
     const Point Clustering::operator+(const Point &point, const Point &point1)
     {
         //create a temporary point to return
-        if (point.getDims() == point1.getDims())
+        if (point.dim == point1.dim)
         {
-            Point p(point.getDims());
+            Point p(point.dim);
 
             //set values of p adding the other two together
-            for (int i = 0; i < point.getDims(); i++)
+            for (int i = 0; i < point.dim; i++)
             {
                 p.values[i] = point.values[i] + point1.values[i];
             }
             return p;
         }
-		else //TODO fix
-			return 0;
+        else //TODO fix
+            return 0;
 
     }
 
- 	//return temp point that represents one point subtracted from another
-	const Point Clustering::operator-(const Point &point, const Point &point1)
-	{
-		//create a temporary point to return
-		if (point.getDims() == point1.getDims())
-		{
-			Point p(point.getDims());
+    //return temp point that represents one point subtracted from another
+    const Point Clustering::operator-(const Point &point, const Point &point1)
+    {
+        //create a temporary point to return
+        if (point.dim == point1.dim)
+        {
+            Point p(point.dim);
 
-			//set values of p adding the other two together
-			for (int i = 0; i < point.getDims(); i++)
-			{
-				p.values[i] = point.values[i] - point1.values[i];
-			}
-			return p;
-		}
-		else //TODO fix
-			return 0;
-	}
+            //set values of p adding the other two together
+            for (int i = 0; i < point.dim; i++)
+            {
+                p.values[i] = point.values[i] - point1.values[i];
+            }
+            return p;
+        }
+        else //TODO fix
+            return 0;
+    }
 
-	//overload == operator
-	bool Clustering::operator==(const Point &point, const Point &point1)
-	{
-		if (point.getDims() == point1.getDims())
-		{
-			//for loop returns false if any elements are different
-			for (int i = 0; i < point.getDims(); i++)
-			{
-				if (point.values[i] != point1.values[i])
-					return false;
-			}
-			//once all elements have been tested, return true
-			return true;
-		}
+    //overload == operator
+    bool Clustering::operator==(const Point &point, const Point &point1)
+    {
+        if (point.dim == point1.dim)
+        {
+            //for loop returns false if any elements are different
+            for (int i = 0; i < point.dim; i++)
+            {
+                if (point.values[i] != point1.values[i])
+                    return false;
+            }
+            //once all elements have been tested, return true
+            return true;
+        }
 
-			//return false if different number of dims
-		else
-			return false;
-	}
+            //return false if different number of dims
+        else
+            return false;
+    }
 
-	//overload != operator. reuse ==..my favorite.
-	bool Clustering::operator!=(const Point &point, const Point &point1)
-	{
-		return !(point == point1);
-	}
+    //overload != operator. reuse ==..my favorite.
+    bool Clustering::operator!=(const Point &point, const Point &point1)
+    {
+        return !(point == point1);
+    }
 
-	//overload < operator
-	bool Clustering::operator<(const Point &point, const Point &point1)
-	{
-		//makes sure points are comparable, and that they are not already equal. reuses !=
-		if (point.getDims() == point1.getDims() && point != point1)
-		{
-			//tests dimensions in lexicographic order.
-			for (int i = 0; i < point.getDims(); i++)
-			{
-				//returns true at first sign of true
-				if (point.values[i] < point1.values[i])
-					return true;
+    //overload < operator
+    bool Clustering::operator<(const Point &point, const Point &point1)
+    {
+        //makes sure points are comparable, and that they are not already equal. reuses !=
+        if (point.dim == point1.dim && point != point1)
+        {
+            //tests dimensions in lexicographic order.
+            for (int i = 0; i < point.dim; i++)
+            {
+                //returns true at first sign of true
+                if (point.values[i] < point1.values[i])
+                    return true;
 
-					//returns false at first sign of false
-				else if (point.values[i] > point1.values[i])
-					return false;
-				//continues on to next dimension otherwise
-			}
-			//should not get past here logically
-		}
+                    //returns false at first sign of false
+                else if (point.values[i] > point1.values[i])
+                    return false;
+                //continues on to next dimension otherwise
+            }
+            //should not get past here logically
+        }
 
-		//if points do not have the same number of dimensions or are equal, return false
-		else
-			return false;
-	}
+            //if points do not have the same number of dimensions or are equal, return false
+        else
+            return false;
+    }
 
-	//overlaod > operator. if not less than and not equal to, should be greater
-	bool Clustering::operator>(const Point &point, const Point &point1)
-	{
-		//hehe. should work.
-		return (point != point1 && !(point < point1));
-	}
+    //overlaod > operator. if not less than and not equal to, should be greater
+    bool Clustering::operator>(const Point &point, const Point &point1)
+    {
+        //hehe. should work.
+        return (point != point1 && !(point < point1));
+    }
 
-	// overload <= operator. use previous functions
-	bool Clustering::operator<=(const Point &point, const Point &point1)
-	{
-		//return  less than    or     equal to
-		return (point < point1 || point == point1);
-	}
+    // overload <= operator. use previous functions
+    bool Clustering::operator<=(const Point &point, const Point &point1)
+    {
+        //return  less than    or     equal to
+        return (point < point1 || point == point1);
+    }
 
-	//overlaod >= operator. use previous functions
-	bool Clustering::operator>=(const Point &point, const Point &point1)
-	{
-		//return greater than  or    equal to
-		return (point > point1 || point == point1);
-	}
+    //overlaod >= operator. use previous functions
+    bool Clustering::operator>=(const Point &point, const Point &point1)
+    {
+        //return greater than  or    equal to
+        return (point > point1 || point == point1);
+    }
 
     std::ostream &operator<<(std::ostream &os, const Point &point)
     {
         os << std::endl;
         //for loop adds each dimension followed by a comma, except for last
-        for (int i = 0; i < point.getDims() - 1; i++) {
+        for (int i = 0; i < point.dim - 1; i++) {
             os << point.getValue(i) << ", ";
         }
         //adds the final value
-        os << point.getValue(point.getDims() - 1);
+        os << point.getValue(point.dim - 1);
 
-		// used for organize testing purposes
-		//os << &point;
+        // used for organize testing purposes
+        //os << &point;
 
-		//discovered that I needed to return to os variable.
-		//can not output multiple things from same cout otherwise.
-		return os;
+        //discovered that I needed to return to os variable.
+        //can not output multiple things from same cout otherwise.
+        return os;
     }
 
     std::istream &Clustering::operator>>(std::istream &is, Point &point)

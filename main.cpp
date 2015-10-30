@@ -368,14 +368,14 @@ int main() {
 
 
 
-    std::ifstream csv("points.txt");
+    std::ifstream csv("infile.txt");
 
+    KMeans instance(3);
 
+    if (csv.is_open())
+        csv >> instance;
 
-    KMeans instance(5);
-    csv >> instance;
-
-    instance.run(4);
+    instance.run(3);
 
     std::cout << instance;
 
