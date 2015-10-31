@@ -29,12 +29,12 @@ if (csv.is_open())
 }
 
 example main.cpp:
+```
 #include <iostream>
 #include <fstream>
 #include "Point.h"
 #include "Cluster.h"
 #include "KMeans.h"
-
 using namespace Clustering;
 
 int main()
@@ -49,7 +49,7 @@ int main()
         instance.run(8);
     }
 }
-
+```
 
 The default output filename is Sharp_pa3_out.txt. 
 This can be changed at either: KMeans.cpp line 132 or KMeans.h line 78
