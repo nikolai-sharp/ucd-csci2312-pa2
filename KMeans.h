@@ -71,10 +71,11 @@ namespace Clustering
 		//made this a pointer
 		Cluster *point_space;
 		//std::vector<Point> *centroidArray;
-		PointPtr centroidArray;
+        std::vector<Point> centroidArray;
 		unsigned int numOfClusters;
 		Clist kCluster;
 		int steps;
+		const std::string DEFAULT_OUTPUT_FILENAME  = "Sharp_pa3_out.txt";
 
 		unsigned int dim;
 		//scorediffthreshhold //TODO find best

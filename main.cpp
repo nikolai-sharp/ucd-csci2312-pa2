@@ -370,14 +370,18 @@ int main() {
 
     std::ifstream csv("infile.txt");
 
-    KMeans instance(3);
+    KMeans instance(5);
 
     if (csv.is_open())
+    {
         csv >> instance;
+        instance.run(8);
+    }
 
-    instance.run(3);
+   
+    
 
-//    std::cout << instance;
+    //std::cout << instance;
 
 
 

@@ -15,7 +15,7 @@ namespace Clustering {
 
     public:
         //added default constructor to set dim to 0
-        Point() {values = nullptr; dim = 0;}
+        //Point() {values = nullptr; dim = 0;}
         Point(unsigned int);
         //Point(int, double *);//TODO
 
@@ -25,7 +25,7 @@ namespace Clustering {
         ~Point();
 
         // Accessors & mutators
-        //unsigned int getDims() const { return dim; }
+        unsigned int getDims() const { return dim; }
         void setValue(int, double);
         void setDims(unsigned int d) {dim = d;}
         double getValue(int) const;

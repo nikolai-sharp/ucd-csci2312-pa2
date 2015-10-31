@@ -18,16 +18,16 @@ namespace Clustering {
 
 //Fist constructor takes in a number of dimensions and allocates space on the heap for
 //a point with that umber of dimensions
-    Point::Point(unsigned int num) {
+    Point::Point(unsigned int num)
+    {
         dim = num;
         values = new double[dim];
-
         //for loop to set all values to 0
         for (int i = 0; i < dim; i++)
             values[i] = 0;
     }
 
-//Second constructor takes in a number of dimensions as well as a pointer to an existing point   TODO ?
+//Second constructor takes in a number of dimensions as well as a pointer to an existing point
 //Point::Point(int num, double * oPoint)
 //{
 //
@@ -35,8 +35,10 @@ namespace Clustering {
 
 
 //Copy constructor. Uses regular constructor to initilize values.
-    Point::Point(const Point &oPoint): Point(oPoint.dim)
+    Point::Point(const Point &oPoint)
     {
+        dim = oPoint.dim;
+        values = new double[dim];
         //For loop copies values of oPoint into the values of this point
         for (int i = 0; i < dim; i++) {
             this->values[i] = oPoint.values[i];
@@ -47,35 +49,21 @@ namespace Clustering {
     Point &Point::operator=(const Point &rhs)
     {
         //only copies if the number of dimensions are the same and it is not itself
-        if (&rhs != this)
+        if (&rhs != this && rhs.dim == dim)
         {
-            //std::cout << "\naddress??:" << &rhs; //THIS WAS THE BASTARD!! I had the if set to if (rhs != *this)..WRONG
-            dim = rhs.dim;
-            //if new point, creates values
-            if (values == nullptr) //changed the logic on this
-            {
-                values = new double[dim];
-            }
-                //if existing point, deletes values and recreates
-            else if (values != nullptr)
-            {
-                delete[] values;
-                values = new double[dim];
-            }
-            else
-            {
-                std::cout << "\nERROR Point operator =: values[] confused.";
-            }
             //For loop copies values of oPoint into the values of this point
             for (int i = 0; i < rhs.dim; i++) {
-                *(values + i) = rhs.values[i];
+                values[i] = rhs.values[i];
             }
             return *this;
         }
-        else
-        {
-            std::cout << "\nERROR point operator= addresses matched.";
-        }
+//        else if (&rhs == this)
+//        {
+//            std::cout << "\nERROR point operator= addresses matched";
+//        }
+//        else
+//            std::cout << "\nERROR point operator= dims did not match";
+        return *this;
     }
 
 
@@ -101,11 +89,12 @@ namespace Clustering {
             return *(values + sDim);
         else
             std::cout << "\nthat is not possible3";
+        return 0;//
     }
 
 //Calculates distance between two like points
     double Point::distanceTo(const Point &oPoint) const {
-        if (oPoint.dim == dim) {
+//        if (oPoint.dim == dim) {
             //dynamic memory to hold distances between specific dimensions
             double *distance = new double[oPoint.dim];
             //initialize sum to zero to avoid other possible numbers sneaking their way in
@@ -119,14 +108,15 @@ namespace Clustering {
             }
 
             //Gotta deallocate that memory;
-            delete[] distance;
+            //delete[] distance;
             return sqrt(sum);
-        }
-
-        else        //TODO ?
-        {
-            std::cout << "\nthat is not possible4";
-        }
+//        }
+//
+//        else
+//        {
+//            std::cout << "\nthat is not possible4";
+//        }
+        return 0;//
     }
 
 
@@ -184,7 +174,7 @@ namespace Clustering {
     }
 
     //Overloads the += operator to add one point to another.
-    Point &Clustering::operator+=(Point &point, const Point &point1)
+    Point &operator+=(Point &point, const Point &point1)
     {
         if (point.dim == point1.dim)
             for (int i = 0; i < point.dim; i++)
@@ -197,7 +187,7 @@ namespace Clustering {
     }
 
     //overloads -= operator to subtract one point from another
-    Point &Clustering::operator-=(Point &point, const Point &point1)
+    Point &operator-=(Point &point, const Point &point1)
     {
         if (point.dim == point1.dim)
             for (int i = 0; i < point.dim; i++)
@@ -210,7 +200,7 @@ namespace Clustering {
     }
 
     //return temp point that represents one point added to another
-    const Point Clustering::operator+(const Point &point, const Point &point1)
+    const Point operator+(const Point &point, const Point &point1)
     {
         //create a temporary point to return
         if (point.dim == point1.dim)
@@ -230,7 +220,7 @@ namespace Clustering {
     }
 
     //return temp point that represents one point subtracted from another
-    const Point Clustering::operator-(const Point &point, const Point &point1)
+    const Point operator-(const Point &point, const Point &point1)
     {
         //create a temporary point to return
         if (point.dim == point1.dim)
@@ -249,7 +239,7 @@ namespace Clustering {
     }
 
     //overload == operator
-    bool Clustering::operator==(const Point &point, const Point &point1)
+    bool operator==(const Point &point, const Point &point1)
     {
         if (point.dim == point1.dim)
         {
@@ -269,13 +259,13 @@ namespace Clustering {
     }
 
     //overload != operator. reuse ==..my favorite.
-    bool Clustering::operator!=(const Point &point, const Point &point1)
+    bool operator!=(const Point &point, const Point &point1)
     {
         return !(point == point1);
     }
 
     //overload < operator
-    bool Clustering::operator<(const Point &point, const Point &point1)
+    bool operator<(const Point &point, const Point &point1)
     {
         //makes sure points are comparable, and that they are not already equal. reuses !=
         if (point.dim == point1.dim && point != point1)
@@ -296,26 +286,26 @@ namespace Clustering {
         }
 
             //if points do not have the same number of dimensions or are equal, return false
-        else
-            return false;
+        
+        return false;
     }
 
     //overlaod > operator. if not less than and not equal to, should be greater
-    bool Clustering::operator>(const Point &point, const Point &point1)
+    bool operator>(const Point &point, const Point &point1)
     {
         //hehe. should work.
         return (point != point1 && !(point < point1));
     }
 
     // overload <= operator. use previous functions
-    bool Clustering::operator<=(const Point &point, const Point &point1)
+    bool operator<=(const Point &point, const Point &point1)
     {
         //return  less than    or     equal to
         return (point < point1 || point == point1);
     }
 
     //overlaod >= operator. use previous functions
-    bool Clustering::operator>=(const Point &point, const Point &point1)
+    bool operator>=(const Point &point, const Point &point1)
     {
         //return greater than  or    equal to
         return (point > point1 || point == point1);
@@ -339,7 +329,7 @@ namespace Clustering {
         return os;
     }
 
-    std::istream &Clustering::operator>>(std::istream &is, Point &point)
+    std::istream &operator>>(std::istream &is, Point &point)
     {
         std::string line;
         getline(is, line);

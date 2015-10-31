@@ -18,3 +18,5 @@ csv >> instance;
 
 Run the instance with the number(K) of clusters you wish
 instance.run(k);
+
+The default output filename is Sharp_pa3_out.txt. This can be changed at either: KMeans.cpp line 132 or KMeans.h line 78

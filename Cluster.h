@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <vector>
 #include "Point.h"
 
 
@@ -90,7 +91,7 @@ namespace Clustering {
 //                std::stringstream lineStream2(line2);
 
                 lineStream >> *tPoint;
-                cluster += tPoint;
+                cluster.add(tPoint);
             }
             return is;
         }
@@ -119,7 +120,7 @@ namespace Clustering {
         const Point getCenroid() {return __centroid;}
         void computeCentroid();
         bool centroidIsValid() {bool truth = __centroidIsValid; return truth;}
-        void pickPoints(int k, PointPtr pointArray);
+        void pickPoints(int k, std::vector<Point> &pointArray);
         int getSize() const {return size;}
         double intraClusterDistance() const;
         friend double interClusterDistance(const Cluster &c1, const Cluster &c2);
@@ -132,6 +133,8 @@ namespace Clustering {
         int generateID() {static int numberOfClusters = 0; return  ++numberOfClusters;}
 
         PointPtr &operator[](int i); //use to access points in Kmeans
+        
+        int getDimms() const {return dim;}
 
 
 
