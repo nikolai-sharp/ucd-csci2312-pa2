@@ -39,14 +39,14 @@ using namespace Clustering;
 
 int main()
 {
-    std::ifstream csv("infile.txt");
+    std::ifstream csv("infile.txt"); //replace 'infile.txt' with desired filename
 
-    KMeans instance(5);
+    KMeans instance(5); //'5' denotes the number of dimensions if your data
 
     if (csv.is_open())
     {
         csv >> instance;
-        instance.run(8);
+        instance.run(8); //'8' denotes the number, K, of clusters desired
     }
 }
 ```
