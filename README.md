@@ -19,14 +19,13 @@ std::ifstream csv("infile.txt");
 KMeans instance(dimensions);
 
 
-3. Read points into instance:
+3. if file is open, read it into the KMeans instance, and run it
   
-csv >> instance;
-
-
-4. Run the instance with the number(K) of clusters you wish
-  
-instance.run(k);
+if (csv.is_open())
+{
+  csv >> instance;
+  instance.run(K);
+}
 
 
 The default output filename is Sharp_pa3_out.txt. This can be changed at either: KMeans.cpp line 132 or KMeans.h line 78
