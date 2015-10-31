@@ -6,17 +6,19 @@ Compiler: I used CLion 1.1.1 for mac.
 
 
 # Instructions:
+in main.cpp:
 
-Open ifstream:
-std::ifstream csv("infile.txt");
+1. Open ifstream:
+  std::ifstream csv("infile.txt");
     
-Initiate a KMeans instance with the number of dimensions of the data:
-KMeans instance(dimensions);
+2. Initiate a KMeans instance with the number of dimensions of the data:
+  KMeans instance(dimensions);
 
-Read points into instance:
-csv >> instance;
+3. Read points into instance:
+  csv >> instance;
 
-Run the instance with the number(K) of clusters you wish
-instance.run(k);
+4. Run the instance with the number(K) of clusters you wish
+  instance.run(k);
+
 
 The default output filename is Sharp_pa3_out.txt. This can be changed at either: KMeans.cpp line 132 or KMeans.h line 78
