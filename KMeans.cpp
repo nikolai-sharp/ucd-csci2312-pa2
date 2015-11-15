@@ -1,11 +1,11 @@
 //
 // Created by Nikolai Sharp on 10/21/15.
 //
-
 #include "KMeans.h"
 #include <fstream>
 #include <vector>
 #include <cmath>
+#include "Exceptions.h"
 
 namespace Clustering
 {
@@ -129,7 +129,7 @@ namespace Clustering
 
 	void KMeans::run(unsigned int k)
 	{
-		std::ofstream outfile(DEFAULT_OUTPUT_FILENAME);
+		std::ofstream outfile("out.txt");
 		numOfClusters = k;
 		//create k-1 clusters
 
@@ -154,11 +154,18 @@ namespace Clustering
         
 
 		//set the centroids of each cluster, starting with kClusters
-		for (int i = 0; i < k-1; i++)
-		{
-			kCluster[i]->setCentroid(centroidArray.at(i));
-		}
-		point_space->setCentroid(centroidArray.at(k-1));
+        try
+        {
+            for (int i = 0; i < k-1; i++)
+            {
+                kCluster[i]->setCentroid(centroidArray.at(i));
+            }
+            point_space->setCentroid(centroidArray.at(k-1));
+        }
+        catch (OutOfBoundsEx outEx)
+        {
+            std::cerr << "KMeans::run()" << outEx;
+        }
 
 //		for (int i = 0; i < kCluster.getSize(); i++)
 //		{
@@ -170,6 +177,20 @@ namespace Clustering
 		//KMeans algorithm
 		clustify();
         
+        //test for removefromemptyex
+//        try
+//        {
+//            Cluster c1(3);
+//            Cluster c2(3);
+//            Point p1(3);
+//            c1.add(&p1);
+//            Cluster::Move::Move(&p1,c1,c2);
+//            Cluster::Move::Move(&p1,c1,c2);
+//        }
+//        catch (RemoveFromEmptyEx remex)
+//        {
+//            std::cerr << "KMeans::run()test;" << remex;
+//        }
 
 		std::cout << "\nprinting:\n";
 		outfile << *this;
@@ -179,81 +200,115 @@ namespace Clustering
 
 	double KMeans::dIn()
 	{
-		double sum = 0;
-		for (int a = 0; a < numOfClusters; a++)
-		{
+		try
+        {
+            double sum = 0;
+            for (int a = 0; a < numOfClusters; a++)
+            {
+                
+                if (a != numOfClusters - 1)
+                {
+                    sum = sum + kCluster[a]->intraClusterDistance();
+                }
+                else
+                {
+                    sum = sum + point_space->intraClusterDistance();
+                }
+            }
+            
+            return sum;
 
-			if (a != numOfClusters - 1)
-			{
-				sum = sum + kCluster[a]->intraClusterDistance();
-			}
-			else
-			{
-				sum = sum + point_space->intraClusterDistance();
-			}
-		}
-
-		return sum;
-	}
+        }
+        catch (OutOfBoundsEx outEx)
+        {
+            std::cerr << "KMeans::dIn();" << outEx;
+            throw outEx;
+        }
+    }
 
 	double KMeans::dOut()
 	{
-		double sum = 0;
-		for (int a = 0; a < numOfClusters - 1; a++)
-		{
-			//test all a to other clusters, m
-			for (int c = a + 1; c < numOfClusters; c++)
-			{
-				//these two cases should account for every set of intercluster distances
-				//since pointspace is the last cluster this would get to, it shouldn't even run
-				//std::cout << "\n test: " << kCluster[a]->interClusterDistance(*kCluster[a], *kCluster[c]);
-				if (c != numOfClusters-1)
-					sum = sum + interClusterDistance(*kCluster[a], *kCluster[c]);
-					//sum += Clustering::interClusterDistance(*kCluster[a], *kCluster[c]);
-				else if (c == numOfClusters - 1)
-					sum = sum + interClusterDistance(*kCluster[a],*point_space);
-				//sum += Clustering::interClusterDistance(*kCluster[a],*point_space);
-			}
-		}
-		return sum;
+        
+		try
+        {
+            double sum = 0;
+            for (int a = 0; a < numOfClusters - 1; a++)
+            {
+                //test all a to other clusters, m
+                for (int c = a + 1; c < numOfClusters; c++)
+                {
+                    //these two cases should account for every set of intercluster distances
+                    //since pointspace is the last cluster this would get to, it shouldn't even run
+                    //std::cout << "\n test: " << kCluster[a]->interClusterDistance(*kCluster[a], *kCluster[c]);
+                    if (c != numOfClusters-1)
+                        sum = sum + interClusterDistance(*kCluster[a], *kCluster[c]);
+                    //sum += Clustering::interClusterDistance(*kCluster[a], *kCluster[c]);
+                    else if (c == numOfClusters - 1)
+                        sum = sum + interClusterDistance(*kCluster[a],*point_space);
+                    //sum += Clustering::interClusterDistance(*kCluster[a],*point_space);
+                }
+            }
+            return sum;
+        }
+        catch (OutOfBoundsEx outEx)
+        {
+            std::cerr << "KMeans::dOut();" << outEx;
+            throw outEx;
+        }
 	}
 
 	double KMeans::pIn()
 	{
-		double sum = 0;
-		for (int a = 0; a < numOfClusters; a++)
-		{
-
-			if (a != numOfClusters - 1)
-			{
-				sum = sum + kCluster[a]->getClusterEdges();
-			}
-			else
-			{
-				sum = sum + point_space->getClusterEdges();
-			}
-		}
-		return sum;
+		try
+        {
+            double sum = 0;
+            for (int a = 0; a < numOfClusters; a++)
+            {
+                
+                if (a != numOfClusters - 1)
+                {
+                    sum = sum + kCluster[a]->getClusterEdges();
+                }
+                else
+                {
+                    sum = sum + point_space->getClusterEdges();
+                }
+            }
+            return sum;
+        }
+        catch (OutOfBoundsEx outEx)
+        {
+            std::cerr << "KMeans::pIn();" << outEx;
+            throw outEx;
+        }
 	}
 
 	double KMeans::pOut()
 	{
-		double sum = 0;
-
-		for (int a = 0; a < numOfClusters - 1; a++)
-		{
-			//test all a to other clusters, m
-			for (int c = a + 1; c < numOfClusters; c++)
-			{
-				//these two cases should account for every set of intercluster distances
-				//since pointspace is the last cluster this would get to, it shouldn't even run
-				if (c != numOfClusters-1)
-					sum = sum + interClusterEdges(*kCluster[a], *kCluster[c]);
-				else if (c == numOfClusters - 1)
-					sum = sum + interClusterEdges(*kCluster[a],*point_space);
-			}
-		}
-		return sum;
+		try
+        {
+            double sum = 0;
+            
+            for (int a = 0; a < numOfClusters - 1; a++)
+            {
+                //test all a to other clusters, m
+                for (int c = a + 1; c < numOfClusters; c++)
+                {
+                    //these two cases should account for every set of intercluster distances
+                    //since pointspace is the last cluster this would get to, it shouldn't even run
+                    if (c != numOfClusters-1)
+                        sum = sum + interClusterEdges(*kCluster[a], *kCluster[c]);
+                    else if (c == numOfClusters - 1)
+                        sum = sum + interClusterEdges(*kCluster[a],*point_space);
+                }
+            }
+            return sum;
+        }
+        catch (OutOfBoundsEx outEx)
+        {
+            std::cerr << "KMeans::pOut();" << outEx;
+            throw outEx;
+        }
 	}
 
 
@@ -303,17 +358,29 @@ namespace Clustering
 								}
 							}
 							//move point if closer centroid is in another cluster. first if for kCluster
-							if (minI != x && minI != numOfClusters - 1)
-							{
-								Cluster::Move((*(kCluster[x]))[y], *kCluster[x], *kCluster[minI]);
-								y--;
-							}
-								//move point to point_space if point_space centroid is coser
-							else if (minI != x && minI == numOfClusters - 1)
-							{
-								Cluster::Move((*(kCluster[x]))[y], *kCluster[x], *point_space);
-								y--;
-							}
+							try
+                            {
+                                if (minI != x && minI != numOfClusters - 1)
+                                {
+                                    Cluster::Move((*(kCluster[x]))[y], *kCluster[x], *kCluster[minI]);
+                                    y--;
+                                }
+                                //move point to point_space if point_space centroid is coser
+                                else if (minI != x && minI == numOfClusters - 1)
+                                {
+                                    Cluster::Move((*(kCluster[x]))[y], *kCluster[x], *point_space);
+                                    y--;
+                                }
+                            }
+                            catch (OutOfBoundsEx outEx)
+                            {
+                                throw outEx;
+                            }
+                            catch (RemoveFromEmptyEx emptyEx)
+                            {
+                                std::cerr << "KMeans::clustify()" << emptyEx;
+                            }
+                            
 
 						}
 					}
@@ -343,27 +410,45 @@ namespace Clustering
 						}
 
 						//move the point if i != k-1
-						if (minI != numOfClusters - 1)
-						{
-							Cluster::Move((*point_space)[j], *point_space, *kCluster[minI]);
-							j--;
-						}
+						try
+                        {
+                            if (minI != numOfClusters - 1)
+                            {
+                                Cluster::Move((*point_space)[j], *point_space, *kCluster[minI]);
+                                j--;
+                            }
+                        }
+                        catch (OutOfBoundsEx outEx)
+                        {
+                            throw outEx;
+                        }
+                        catch (RemoveFromEmptyEx emptyEx)
+                        {
+                            std::cerr << "KMeans::clustify()" << emptyEx;
+                        }
 					}
 				}
 			}
 			//loop through clusters again, check for centroid validity and recalc if not
-			for (int x = 0; x < numOfClusters; x++) //TODO
-			{
-				// go through point_space
-				if (x != numOfClusters - 1 && kCluster[x]->getSize() > 0 && !kCluster[x]->centroidIsValid())
-				{
-					kCluster[x]->computeCentroid();
-				}
-				else if (x == numOfClusters - 1 && point_space->getSize() > 0 && !point_space->centroidIsValid())
-				{
-					point_space->computeCentroid();
-				}
-			}
+            try
+            {
+                for (int x = 0; x < numOfClusters; x++) //TODO
+                {
+                    // go through point_space
+                    if (x != numOfClusters - 1 && kCluster[x]->getSize() > 0 && !kCluster[x]->centroidIsValid())
+                    {
+                        kCluster[x]->computeCentroid();
+                    }
+                    else if (x == numOfClusters - 1 && point_space->getSize() > 0 && !point_space->centroidIsValid())
+                    {
+                        point_space->computeCentroid();
+                    }
+                }
+            }
+            catch (OutOfBoundsEx outEx)
+            {
+                std::cerr << "KMeans::clustify()" << outEx;
+            }
 
 				//calculate score
 				//std::cout << "\ndin: " << dIn() << " dout: " << dOut() << " pin: " << pIn() << " pout: " << pOut();
@@ -375,7 +460,7 @@ namespace Clustering
 			//std::cout << "\nstep: " << steps << ":" << *this;
 			steps++;
 
-			std::cout << "\nsteps: " << steps << " score: " << score << " scoreDiff: " << scoreDiff;
+            std::cout << "steps: " << steps << " score: " << score << " scoreDiff: " << scoreDiff << std::endl;
 
 //			for (int i = 0; i < kCluster.getSize(); i++)
 //		{

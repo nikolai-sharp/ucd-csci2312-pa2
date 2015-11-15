@@ -11,9 +11,11 @@
 #include <string>
 #include <iomanip>
 #include "Point.h"
+#include "Exceptions.h"
 
 
-namespace Clustering {
+namespace Clustering
+{
 
 
 //Fist constructor takes in a number of dimensions and allocates space on the heap for
@@ -25,6 +27,7 @@ namespace Clustering {
         //for loop to set all values to 0
         for (int i = 0; i < dim; i++)
             values[i] = 0;
+        __id = generateID();
     }
 
 //Second constructor takes in a number of dimensions as well as a pointer to an existing point
@@ -49,52 +52,82 @@ namespace Clustering {
     Point &Point::operator=(const Point &rhs)
     {
         //only copies if the number of dimensions are the same and it is not itself
-        if (&rhs != this && rhs.dim == dim)
+        try
         {
+            if (dim != rhs.dim)
+            {
+                throw DimensionalityMismatchEx("operator=", __id, rhs.__id);//TODO update PID
+            }
             //For loop copies values of oPoint into the values of this point
             for (int i = 0; i < rhs.dim; i++) {
                 values[i] = rhs.values[i];
             }
-            return *this;
         }
-//        else if (&rhs == this)
-//        {
-//            std::cout << "\nERROR point operator= addresses matched";
-//        }
-//        else
-//            std::cout << "\nERROR point operator= dims did not match";
+        catch (DimensionalityMismatchEx dimMM)
+        {
+            throw dimMM;
+        }
         return *this;
     }
 
 
 //Destructor to delete any memory allocated on the heap
     Point::~Point() {
-        delete[] values;
+        //delete[] values;
     }
 
 //Set function sets value of specific dimension of point
 //I like starting with the 0th dimension. It makes more sense to me.
     void Point::setValue(int sDim, double val) {
+
+        try
+        {
+            if (sDim < 0 && sDim >= dim)
+                throw OutOfBoundsEx("setValue","Point",__id);
+            values[sDim] = val;
+        }
+        catch (OutOfBoundsEx outEx)
+        {
+            throw outEx;
+        }
+
+
+
         //check to make sure is a valid dimension
-        if (sDim >= 0 && sDim < dim)
-            *(values + sDim) = val;
-        else
-            std::cout << "\nthat is not possible2";
+//        if (sDim >= 0 && sDim < dim)
+//            values[sDim] = val;
+//        else
+//            std::cout << "\nthat is not possible2";
     }
 
 //Returns value at specific dimension of point
     double Point::getValue(int sDim) const {
+        try
+        {
+            if (sDim < 0 || sDim >= dim)
+                throw OutOfBoundsEx("getValue()","Point",__id);
+            return values[sDim];
+        }
+        catch(OutOfBoundsEx outEx)
+        {
+            throw outEx;
+        }
+
+
         //check if is valid dimension
         if (sDim >= 0 && sDim < dim)
             return *(values + sDim);
         else
             std::cout << "\nthat is not possible3";
-        return 0;//
+        return 0;
     }
 
 //Calculates distance between two like points
     double Point::distanceTo(const Point &oPoint) const {
-//        if (oPoint.dim == dim) {
+        try
+        {
+            if (dim != oPoint.dim)
+                throw DimensionalityMismatchEx("distanceTo", __id, oPoint.__id);
             //dynamic memory to hold distances between specific dimensions
             double *distance = new double[oPoint.dim];
             //initialize sum to zero to avoid other possible numbers sneaking their way in
@@ -108,26 +141,26 @@ namespace Clustering {
             }
 
             //Gotta deallocate that memory;
-            //delete[] distance;
+            delete distance;
             return sqrt(sum);
-//        }
-//
-//        else
-//        {
-//            std::cout << "\nthat is not possible4";
-//        }
-        return 0;//
+        }
+        catch (DimensionalityMismatchEx dimMM)
+        {
+            throw dimMM;
+        }
+        
+        return 0;
     }
 
 
 //Multiplies each dimension by rhs
     Point &Point::operator*=(double rhs) {
 
-        //Point *p = new Point(dim);
+        
         for (int i = 0; i < dim; i++) {
             values[i] = values[i] * rhs;
         }
-        //Return address of this to satisfy function requirements
+        
         return *this;
     }
 
@@ -176,26 +209,43 @@ namespace Clustering {
     //Overloads the += operator to add one point to another.
     Point &operator+=(Point &point, const Point &point1)
     {
-        if (point.dim == point1.dim)
+        try
+        {
+            if (point.dim != point1.dim)
+                throw DimensionalityMismatchEx("operator+=", point.__id, point1.__id);
+            
             for (int i = 0; i < point.dim; i++)
             {
                 point.values[i] += point1.values[i];
             }
-        else
-            std::cout << "\nthat is not possible5";
-        return point;
+            
+        }
+        catch (DimensionalityMismatchEx dimMM)
+        {
+            throw dimMM;
+        }
+            return point;
     }
 
     //overloads -= operator to subtract one point from another
     Point &operator-=(Point &point, const Point &point1)
     {
-        if (point.dim == point1.dim)
+        try
+        {
+            
+            if (point.dim != point1.dim)
+            {
+                throw DimensionalityMismatchEx("operator-=",point.__id, point1.__id);
+            }
             for (int i = 0; i < point.dim; i++)
             {
                 point.values[i] -= point1.values[i];
             }
-        else
-            std::cout << "\nthat is not possible6";
+        }
+        catch (DimensionalityMismatchEx dimMM)
+        {
+            throw dimMM;
+        }
         return point;
     }
 
@@ -203,8 +253,10 @@ namespace Clustering {
     const Point operator+(const Point &point, const Point &point1)
     {
         //create a temporary point to return
-        if (point.dim == point1.dim)
+        try
         {
+            if (point.dim != point1.dim)
+                throw DimensionalityMismatchEx("operator+", point.__id, point1.__id);
             Point p(point.dim);
 
             //set values of p adding the other two together
@@ -214,8 +266,12 @@ namespace Clustering {
             }
             return p;
         }
-        else //TODO fix
-            return 0;
+        catch (DimensionalityMismatchEx dimMM)
+        {
+            throw dimMM;
+        }
+        
+        return 0;
 
     }
 
@@ -223,8 +279,10 @@ namespace Clustering {
     const Point operator-(const Point &point, const Point &point1)
     {
         //create a temporary point to return
-        if (point.dim == point1.dim)
+        try
         {
+            if (point.dim != point1.dim)
+                throw DimensionalityMismatchEx("operator-", point.__id, point1.__id);
             Point p(point.dim);
 
             //set values of p adding the other two together
@@ -234,15 +292,21 @@ namespace Clustering {
             }
             return p;
         }
-        else //TODO fix
+        catch (DimensionalityMismatchEx dimMM)
+        {
+            throw dimMM;
+        }
+        
             return 0;
     }
 
     //overload == operator
     bool operator==(const Point &point, const Point &point1)
     {
-        if (point.dim == point1.dim)
+        try
         {
+            if (point.dim != point1.dim)
+                throw DimensionalityMismatchEx("operator==", point.__id, point1.__id);
             //for loop returns false if any elements are different
             for (int i = 0; i < point.dim; i++)
             {
@@ -254,22 +318,36 @@ namespace Clustering {
         }
 
             //return false if different number of dims
-        else
-            return false;
+        catch (DimensionalityMismatchEx dimMM)
+        {
+            throw dimMM;
+        }
+        return false;
     }
 
     //overload != operator. reuse ==..my favorite.
     bool operator!=(const Point &point, const Point &point1)
     {
-        return !(point == point1);
+        try
+        {
+            if (point.dim != point1.dim)
+                throw DimensionalityMismatchEx("operator!=", point.__id, point.__id);
+            return !(point == point1);
+        }
+        catch (DimensionalityMismatchEx dimMM)
+        {
+            throw dimMM;
+        }
     }
 
     //overload < operator
     bool operator<(const Point &point, const Point &point1)
     {
         //makes sure points are comparable, and that they are not already equal. reuses !=
-        if (point.dim == point1.dim && point != point1)
+        try
         {
+            if (point.dim != point1.dim)
+                throw DimensionalityMismatchEx("operator<", point.__id, point1.__id);
             //tests dimensions in lexicographic order.
             for (int i = 0; i < point.dim; i++)
             {
@@ -284,6 +362,10 @@ namespace Clustering {
             }
             //should not get past here logically
         }
+        catch (DimensionalityMismatchEx dimMM)
+        {
+            throw dimMM;
+        }
 
             //if points do not have the same number of dimensions or are equal, return false
         
@@ -293,22 +375,48 @@ namespace Clustering {
     //overlaod > operator. if not less than and not equal to, should be greater
     bool operator>(const Point &point, const Point &point1)
     {
-        //hehe. should work.
-        return (point != point1 && !(point < point1));
+        try
+        {
+            if (point.dim != point1.dim)
+                throw DimensionalityMismatchEx("operator>", point.__id, point1.__id);
+            return (point != point1 && !(point < point1));
+        } catch (DimensionalityMismatchEx dimMM)
+        {
+            throw dimMM;
+        }
+        
     }
 
     // overload <= operator. use previous functions
     bool operator<=(const Point &point, const Point &point1)
     {
         //return  less than    or     equal to
-        return (point < point1 || point == point1);
+        try
+        {
+            if (point.dim != point1.dim)
+                throw DimensionalityMismatchEx("operator>=", point.__id, point1.__id);
+            return (point < point1 || point == point1);
+        }
+        catch (DimensionalityMismatchEx dimMM)
+        {
+            throw dimMM;
+        }
     }
 
     //overlaod >= operator. use previous functions
     bool operator>=(const Point &point, const Point &point1)
     {
-        //return greater than  or    equal to
-        return (point > point1 || point == point1);
+        try
+        {
+            if (point.dim != point1.dim)
+                throw DimensionalityMismatchEx("operator>=", point.__id, point1.__id);
+            //return greater than  or    equal to
+            return (point > point1 || point == point1);
+        }
+        catch (DimensionalityMismatchEx dimMM)
+        {
+            throw dimMM;
+        }
     }
 
     std::ostream &operator<<(std::ostream &os, const Point &point)
@@ -331,22 +439,56 @@ namespace Clustering {
 
     std::istream &operator>>(std::istream &is, Point &point)
     {
-        std::string line;
-        getline(is, line);
-        std::stringstream lineStream(line);
-        std::string value;
-        double d;
-
-        int i = 0;
-        while (getline(lineStream, value, ',')) {
-            d = stod(value);
-
-            //std::cout << "Value: " << d << std::endl;
-
-            point.setValue(i++,d);
+        
+        try
+        {
+            std::string line;
+            getline(is, line);
+            std::string line2 = line;
+            std::stringstream lineStream(line);
+            std::stringstream lineStream2(line2);
+            std::string value;
+            double d;
+            int dimCheck = 0;
+            while (getline(lineStream2, value, ','))
+            {
+                dimCheck++;
+            }
+            if (point.dim != dimCheck)
+                throw DimensionalityMismatchEx("operator>>", point.__id, 0);
+            
+            int i = 0;
+            while (getline(lineStream, value, ','))
+            {
+                d = stod(value);
+                
+                //std::cout << "Value: " << d << std::endl;
+                
+                point.setValue(i++,d);
+            }
+        }
+        catch (DimensionalityMismatchEx dimMM)
+        {
+            throw dimMM;
         }
         return is;
     }
+    
+    double Point::operator[](int index)
+    {
+        try
+        {
+            if (index < 0 || index > dim - 1)
+                throw OutOfBoundsEx("operator[]", "Point", __id);
+            return values[index];
+        }
+        catch (OutOfBoundsEx outEx)
+        {
+            //std::cerr << outEx;
+            throw outEx;//TODO throw to what??
+        }
+    }
+    
 }
 
 //

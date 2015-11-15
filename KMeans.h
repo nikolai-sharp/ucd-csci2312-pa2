@@ -75,7 +75,6 @@ namespace Clustering
 		unsigned int numOfClusters;
 		Clist kCluster;
 		int steps;
-		const std::string DEFAULT_OUTPUT_FILENAME  = "Sharp_pa3_out.txt";
 
 		unsigned int dim;
 		//scorediffthreshhold //TODO find best

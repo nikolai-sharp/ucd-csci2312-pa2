@@ -7,15 +7,18 @@
 
 #include <iostream>
 
-namespace Clustering {
+namespace Clustering
+{
 
     class Point {
         unsigned int dim;        // number of dimensions of the point
         double *values; // values of the point's dimensions
+        int __id;
+        //static int numberOfPoints;
 
     public:
         //added default constructor to set dim to 0
-        //Point() {values = nullptr; dim = 0;}
+        Point() = delete;//{values = nullptr; dim = 0;}
         Point(unsigned int);
         //Point(int, double *);//TODO
 
@@ -29,6 +32,7 @@ namespace Clustering {
         void setValue(int, double);
         void setDims(unsigned int d) {dim = d;}
         double getValue(int) const;
+        int generateID() {static int numberOfPoints = 0;return  ++numberOfPoints;}
 
         // Functions
         double distanceTo(const Point &) const;
@@ -61,7 +65,8 @@ namespace Clustering {
         friend std::istream &operator>>(std::istream &, Point &);
 
         //nabbed this during class. not sure what it's useful for yet.
-        double &operator[](int index){return values[index - 1];}
+        double operator[](int index);
+        
     };
 
 //    #inlclude "Point.cpp"   //keep for templates in Cluster // don't forget to remove Point.cpp from CMakeLists.

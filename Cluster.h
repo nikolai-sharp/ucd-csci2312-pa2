@@ -14,7 +14,8 @@
 #include "Point.h"
 
 
-namespace Clustering {
+namespace Clustering
+{
 
     typedef Point *PointPtr;
     //typedef std::shared_ptr<Point*> PointPtr;
@@ -143,9 +144,9 @@ namespace Clustering {
         class Move
         {
         public:
-            Move(const PointPtr &ptr, Cluster &from, Cluster &to) {perform(ptr, from, to);}
+            Move(const PointPtr &ptr, Cluster &from, Cluster &to);
         private:
-            void perform(const PointPtr &ptr, Cluster &from, Cluster &to) {to.add(from.remove(ptr));}
+            void perform(const PointPtr &ptr, Cluster &from, Cluster &to);
         };
 
     };
