@@ -2,16 +2,8 @@
 // Created by Nikolai Sharp on 9/20/15.
 //
 
-#include <math.h>
-#include <MacTypes.h>
-//#include <cassert>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <iomanip>
+
 #include "Point.h"
-#include "Exceptions.h"
 
 
 namespace Clustering
@@ -23,14 +15,18 @@ namespace Clustering
     Point::Point(unsigned int num)
     {
         dim = num;
-        values = new double[dim];
+//        values = new double[dim];
         //for loop to set all values to 0
         for (int i = 0; i < dim; i++)
-            values[i] = 0;
+        {
+            values.push_back(0);
+            //std::cout << values[i];
+        }
+        //std::cout << std::endl;
         __id = generateID();
     }
 
-//Second constructor takes in a number of dimensions as well as a pointer to an existing point
+//Second constructor takes in a number of dimensions as well as a pointer to an existing point   TODO ?
 //Point::Point(int num, double * oPoint)
 //{
 //
@@ -41,10 +37,10 @@ namespace Clustering
     Point::Point(const Point &oPoint)
     {
         dim = oPoint.dim;
-        values = new double[dim];
+//        values = new double[dim];
         //For loop copies values of oPoint into the values of this point
         for (int i = 0; i < dim; i++) {
-            this->values[i] = oPoint.values[i];
+            this->values.push_back(oPoint.values[i]);
         }
     }
 
@@ -59,8 +55,10 @@ namespace Clustering
                 throw DimensionalityMismatchEx("operator=", __id, rhs.__id);//TODO update PID
             }
             //For loop copies values of oPoint into the values of this point
-            for (int i = 0; i < rhs.dim; i++) {
-                values[i] = rhs.values[i];
+            for (int i = 0; i < rhs.dim; i++)
+            {
+                values[i] = rhs[i];
+                //std::cout << rhs[i] << std::endl;
             }
         }
         catch (DimensionalityMismatchEx dimMM)
@@ -79,47 +77,21 @@ namespace Clustering
 //Set function sets value of specific dimension of point
 //I like starting with the 0th dimension. It makes more sense to me.
     void Point::setValue(int sDim, double val) {
-
-        try
-        {
-            if (sDim < 0 && sDim >= dim)
-                throw OutOfBoundsEx("setValue","Point",__id);
-            values[sDim] = val;
-        }
-        catch (OutOfBoundsEx outEx)
-        {
-            throw outEx;
-        }
-
-
-
         //check to make sure is a valid dimension
-//        if (sDim >= 0 && sDim < dim)
-//            values[sDim] = val;
-//        else
-//            std::cout << "\nthat is not possible2";
+        if (sDim >= 0 && sDim < dim)
+            values[sDim] = val;
+        else
+            std::cout << "\nthat is not possible2";
     }
 
 //Returns value at specific dimension of point
     double Point::getValue(int sDim) const {
-        try
-        {
-            if (sDim < 0 || sDim >= dim)
-                throw OutOfBoundsEx("getValue()","Point",__id);
-            return values[sDim];
-        }
-        catch(OutOfBoundsEx outEx)
-        {
-            throw outEx;
-        }
-
-
         //check if is valid dimension
         if (sDim >= 0 && sDim < dim)
-            return *(values + sDim);
+            return values[sDim];
         else
             std::cout << "\nthat is not possible3";
-        return 0;
+        return 0;//TODO try catch
     }
 
 //Calculates distance between two like points
@@ -149,7 +121,7 @@ namespace Clustering
             throw dimMM;
         }
         
-        return 0;
+        return 0;//TODO try catch
     }
 
 
@@ -474,11 +446,11 @@ namespace Clustering
         return is;
     }
     
-    double Point::operator[](int index)
+    double const &Point::operator[](const unsigned int index) const
     {
         try
         {
-            if (index < 0 || index > dim - 1)
+            if (index >= dim)
                 throw OutOfBoundsEx("operator[]", "Point", __id);
             return values[index];
         }

@@ -4,7 +4,6 @@
 
 
 #include "Cluster.h"
-#include "Exceptions.h"
 
 
 namespace Clustering
@@ -93,12 +92,12 @@ namespace Clustering
             catch (OutOfBoundsEx outEx)
             {
                 std::cerr << "Cluster(Cluster):" << outEx;
-                throw outEx;
+                //throw outEx;
             }
             catch (DimensionalityMismatchEx dimMM)
             {
                 std::cerr << "Cluster(Cluster):" << dimMM;
-                throw dimMM;
+                //throw dimMM;
             }
 		}
 		else
@@ -320,12 +319,12 @@ namespace Clustering
         catch (OutOfBoundsEx outEx)
         {
             std::cerr << "Cluster::add();" << outEx;
-            throw outEx;
+            //throw outEx;
         }
         catch (DimensionalityMismatchEx dimMM)
         {
             std::cerr << "Cluster::add();" << dimMM;
-            throw dimMM;
+            //throw dimMM;
         }
     }
 //	void Cluster::add(PointPtr const &ptr)
@@ -441,12 +440,12 @@ namespace Clustering
         catch (OutOfBoundsEx outEx)
         {
             std::cerr << "Cluster::remove():" << outEx;
-            throw outEx;
+            //throw outEx;
         }
         catch (DimensionalityMismatchEx dimMM)
         {
             std::cerr << "Cluster::remove():" << dimMM;
-            throw dimMM;
+            //throw dimMM;
         }
         catch (RemoveFromEmptyEx emptyEx)
         {
@@ -489,7 +488,7 @@ namespace Clustering
         catch (OutOfBoundsEx outEx)
         {
             std::cerr << "Cluster::operator==:" << outEx;
-            throw outEx;
+            //throw outEx;
         }
         catch (DimensionalityMismatchEx dimMM)
         {
@@ -517,14 +516,14 @@ namespace Clustering
         catch (DimensionalityMismatchEx dimMM)
         {
             std::cerr << "correctionFromPrevious:Cluster::operator+(cluster)\n";
-            throw dimMM;
+            //throw dimMM;
         }
 		catch (OutOfBoundsEx outEx)
         {
             std::cerr << "correctionFromPrevious:Cluster::operator+\n(cluster)";
-            throw outEx;
+            //throw outEx;
         }
-        
+        return lhs;
 	}
 
 	//extremely similar to + not doing dynamically..
@@ -541,13 +540,14 @@ namespace Clustering
         catch (DimensionalityMismatchEx dimMM)
         {
             std::cerr << "correctionFromPrevious:Cluster::operator-(cluster)\n";
-            throw dimMM;
+            //throw dimMM;
         }
         catch (OutOfBoundsEx outEx)
         {
             std::cerr << "correctionFromPrevious:Cluster::operator-(cluster)\n";
-            throw outEx;
+            //throw outEx;
         }
+        return lhs; //TODO, not sure if right
 	}
 
 
@@ -564,13 +564,14 @@ namespace Clustering
         catch (DimensionalityMismatchEx dimMM)
         {
             std::cerr << "correctionFromPrevious:Cluster::operator+(point)\n";
-            throw dimMM;
+            //throw dimMM;
         }
         catch (OutOfBoundsEx outEx)
         {
             std::cerr << "correctionFromPrevious:Cluster::operator+(point)\n";
-            throw outEx;
+            //throw outEx;
         }
+        return lhs; //not sure if right TODO
 	}
 
 	const Cluster operator-(const Cluster &lhs, const PointPtr &rhs)
@@ -585,13 +586,14 @@ namespace Clustering
         catch (DimensionalityMismatchEx dimMM)
         {
             std::cerr << "correctionFromPrevious:Cluster::operator-(point)\n";
-            throw dimMM;
+            //throw dimMM;
         }
         catch (OutOfBoundsEx outEx)
         {
             std::cerr << "correctionFromPrevious:Cluster::operator-(point)\n";
-            throw outEx;
+            //throw outEx;
         }
+        return lhs;
 	}
 
 	//had to redo these.. had strange issues
@@ -616,13 +618,14 @@ namespace Clustering
         catch (OutOfBoundsEx outEx)
         {
             std::cerr << "Cluster::operator+=(cluster);" << outEx;
-            throw outEx;
+            //throw outEx;
         }
         catch (DimensionalityMismatchEx dimMM)
         {
             std::cerr << "Cluster::operator+=(cluster);" << dimMM;
-            throw dimMM;
+            //throw dimMM;
         }
+        return *this;
 	}
 
 	Cluster &Cluster::operator-=(const Cluster &rhs)
@@ -646,13 +649,14 @@ namespace Clustering
         catch (OutOfBoundsEx outEx)
         {
             std::cerr << "Cluster::operator-=(cluster);" << outEx;
-            throw outEx;
+            //throw outEx;
         }
         catch (DimensionalityMismatchEx dimMM)
         {
             std::cerr << "Cluster::operator-=(cluster);" << dimMM;
-            throw dimMM;
+            //throw dimMM;
         }
+        return *this;//todo not sure
 	}
 
 	Cluster &Cluster::operator+=(const PointPtr &rhs)
@@ -665,13 +669,14 @@ namespace Clustering
         catch (DimensionalityMismatchEx dimMM)
         {
             std::cerr << "correctionFromPrevious:Cluster::operator+=(point)\n";
-            throw dimMM;
+           // throw dimMM;
         }
         catch (OutOfBoundsEx outEx)
         {
             std::cerr << "correctionFromPrevious:Cluster::operator+=(point)\n";
-            throw outEx;
+            //throw outEx;
         }
+        return *this;
 	}
 
 	Cluster &Cluster::operator-=(const PointPtr &rhs)
@@ -685,13 +690,14 @@ namespace Clustering
         catch (DimensionalityMismatchEx dimMM)
         {
             std::cerr << "correctionFromPrevious:Cluster::operator-=(point)\n";
-            throw dimMM;
+            //throw dimMM;
         }
         catch (OutOfBoundsEx outEx)
         {
             std::cerr << "correctionFromPrevious:Cluster::operator-=(point)\n";
-            throw outEx;
+            //throw outEx;
         }
+        return *this;
 	}
 
 
@@ -704,12 +710,12 @@ namespace Clustering
         catch (OutOfBoundsEx outEx)
         {
             std::cerr << "Cluster::setCentroid();" << outEx;
-            throw outEx;
+            //throw outEx;
         }
         catch (DimensionalityMismatchEx dimMM)
         {
             std::cerr << "Cluster::setCentroid();" << dimMM;
-            throw dimMM;
+            //throw dimMM;
         }
 		//__centroidIsValid = true;
 	}
@@ -746,12 +752,12 @@ namespace Clustering
         catch (OutOfBoundsEx outEx)
         {
             std::cerr << "Cluster::computeCentroid();" << outEx;
-            throw outEx;
+            //throw outEx;
         }
         catch (DimensionalityMismatchEx dimMM)
         {
             std::cerr << "Cluster::computeCentroid();" << dimMM;
-            throw dimMM;
+            //throw dimMM;
         }
         catch (RemoveFromEmptyEx emptyEx)
         {
@@ -816,12 +822,12 @@ namespace Clustering
         catch (OutOfBoundsEx outEx)
         {
             std::cerr << "Cluster::pickPoints();" << outEx;
-            throw outEx;
+            //throw outEx;
         }
         catch (DimensionalityMismatchEx dimMM)
         {
             std::cerr << "Cluster::pickPoints();" << dimMM;
-            throw dimMM;
+            //throw dimMM;
         }
         //std::cout << "!!SIZE!!::" << pointArray.size() << std::endl;
 	}
@@ -900,13 +906,14 @@ namespace Clustering
         catch (OutOfBoundsEx outEx)
         {
             std::cerr << "Cluster::intraClusterDistance();" << outEx;
-            throw outEx;
+            //throw outEx;
         }
         catch (DimensionalityMismatchEx dimMM)
         {
             std::cerr << "Cluster::intraClusterDistance();" << dimMM;
-            throw dimMM;
+            //throw dimMM;
         }
+        return 0;//todo
 	}
 
 	double interClusterDistance(const Cluster &c1, const Cluster &c2)
@@ -938,13 +945,14 @@ namespace Clustering
         catch (OutOfBoundsEx outEx)
         {
             std::cerr << "Cluster::interClusterDistance();" << outEx;
-            throw outEx;
+            //throw outEx;
         }
         catch (DimensionalityMismatchEx dimMM)
         {
             std::cerr << "Cluster::interClusterDistance();" << dimMM;
-            throw dimMM;
+            //throw dimMM;
         }
+        return 0;//todo
 	}
     
     Cluster::Move::Move(const PointPtr &ptr, Cluster &from, Cluster &to)

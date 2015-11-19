@@ -5,14 +5,23 @@
 #ifndef CLUSTERING_POINT_H
 #define CLUSTERING_POINT_H
 
+#include <math.h>
+#include <MacTypes.h>
+//#include <cassert>
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <iomanip>
+#include <vector>
+#include "Exceptions.h"
 
 namespace Clustering
 {
 
     class Point {
         unsigned int dim;        // number of dimensions of the point
-        double *values; // values of the point's dimensions
+        std::vector<double> values; // values of the point's dimensions
         int __id;
         //static int numberOfPoints;
 
@@ -65,7 +74,7 @@ namespace Clustering
         friend std::istream &operator>>(std::istream &, Point &);
 
         //nabbed this during class. not sure what it's useful for yet.
-        double operator[](int index);
+        const double &operator[](const unsigned int index) const;
         
     };
 

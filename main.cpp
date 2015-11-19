@@ -10,7 +10,7 @@ using namespace Clustering;
 int main() {
     
     
-        std::ifstream csv("infile.txt");
+        std::ifstream csv("infile2kd3.txt");
         //std::ifstream csv("infile10kd5.txt");
         
         KMeans instance(3);
@@ -51,5 +51,4 @@ int main() {
     
     return 0;
 }
-
 

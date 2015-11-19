@@ -69,4 +69,3 @@ namespace Clustering
 }
 
 #endif /* Exceptions_hpp */
-

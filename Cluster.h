@@ -11,6 +11,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include "Exceptions.h"
 #include "Point.h"
 
 
@@ -77,22 +78,29 @@ namespace Clustering
         friend std::ostream &operator<<(std::ostream &, const Cluster & cluster);
         friend std::istream &operator>>(std::istream &is, Cluster &cluster)
         {
-            std::string line;
-            while (std::getline(is, line))
+            try
             {
-//                std::string line2 = line;
-                std::stringstream lineStream(line);
-//                std::string value;
-//                int i = 0;
-//                while (getline(lineStream, value, ','))
-//                {
-//                    i++;
-//                }
-                Point *tPoint = new Point(cluster.dim);
-//                std::stringstream lineStream2(line2);
-
-                lineStream >> *tPoint;
-                cluster.add(tPoint);
+                std::string line;
+                while (std::getline(is, line))
+                {
+                    //                std::string line2 = line;
+                    std::stringstream lineStream(line);
+                    //                std::string value;
+                    //                int i = 0;
+                    //                while (getline(lineStream, value, ','))
+                    //                {
+                    //                    i++;
+                    //                }
+                    Point *tPoint = new Point(cluster.dim);
+                    //                std::stringstream lineStream2(line2);
+                    
+                    lineStream >> *tPoint;
+                    cluster.add(tPoint);
+                }
+            }
+            catch (DimensionalityMismatchEx dimMM)
+            {
+                std::cerr << "Cluster::operator>>;" << dimMM;
             }
             return is;
         }
@@ -156,4 +164,3 @@ namespace Clustering
 }
 #endif //CLUSTERING_CLUSTER_H
 //
-
