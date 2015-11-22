@@ -41,6 +41,7 @@ namespace Clustering
         void setValue(int, double);
         void setDims(unsigned int d) {dim = d;}
         double getValue(int) const;
+        const unsigned int getId() const {return __id;}
         int generateID() {static int numberOfPoints = 0;return  ++numberOfPoints;}
 
         // Functions

@@ -11,6 +11,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <forward_list>
 #include "Exceptions.h"
 #include "Point.h"
 
@@ -18,37 +19,36 @@
 namespace Clustering
 {
 
-    typedef Point *PointPtr;
+//    typedef Point *PointPtr;
     //typedef std::shared_ptr<Point*> PointPtr;
-    typedef struct LNode *LNodePtr;
+//    typedef struct LNode *LNodePtr;
 
 //    struct LNode;
 //    typedef LNode *LNodePtr;
 
 
-    struct LNode {
-        PointPtr p;
-        LNodePtr next;
-    };
+//    struct LNode {
+//        PointPtr p;
+//        LNodePtr next;
+//    };
 
 
     class Cluster {
     private:
+        std::forward_list<Point> points;
         int size;
-        //Using this as the head
-        LNodePtr points;
         //point to current LNode in linked list
-        LNodePtr ptPtr;
+        std::forward_list<Point>::iterator pItr;
         //point to next LNode for comparison to ptPtr
-        LNodePtr nextPtr;
-        //point to last LNode
-        LNodePtr endPtr;
+        std::forward_list<Point>::iterator nItr;
+        
+        
+        
+        ////////////////todo
         //used to create new LNode
-        LNodePtr newPtr;
+        std::forward_list<Point>::iterator endItr;
         //add member variable to hold number of dimensions this cluster holds
         unsigned int dim;
-        // release points, tells class whether or not it can deallocate points
-        bool __release_points;
         //centroid
         Point __centroid;
         bool __centroidIsValid;
@@ -69,8 +69,8 @@ namespace Clustering
         ~Cluster();
 
         // Set functions: They allow calling c1.add(c2.remove(p));
-        void add(const PointPtr &);
-        const PointPtr &remove(const PointPtr &);
+        void add(const Point &);
+        const Point &remove(const Point &);
 
         // Overloaded operators
 
@@ -91,10 +91,11 @@ namespace Clustering
                     //                {
                     //                    i++;
                     //                }
-                    Point *tPoint = new Point(cluster.dim);
+                    Point tPoint(cluster.dim);
                     //                std::stringstream lineStream2(line2);
                     
-                    lineStream >> *tPoint;
+                    lineStream >> tPoint;
+                    //std::cout << tPoint;
                     cluster.add(tPoint);
                 }
             }
@@ -113,8 +114,8 @@ namespace Clustering
 		Cluster &operator+=(const Cluster &rhs); // union
 		Cluster &operator-=(const Cluster &rhs); // (asymmetric) difference
 
-        Cluster &operator+=(const PointPtr &rhs); // add point
-        Cluster &operator-=(const PointPtr &rhs); // remove point
+        Cluster &operator+=(const Point &rhs); // add point
+        Cluster &operator-=(const Point &rhs); // remove point
 
         // Set-destructive operators (duplicate points in the space)
         // - Friends
@@ -141,9 +142,10 @@ namespace Clustering
         int getID() {return __id;}
         int generateID() {static int numberOfClusters = 0; return  ++numberOfClusters;}
 
-        PointPtr &operator[](int i); //use to access points in Kmeans
+        Point &operator[](int i); //use to access points in Kmeans
         
         int getDimms() const {return dim;}
+        void clear();
 
 
 
@@ -152,9 +154,9 @@ namespace Clustering
         class Move
         {
         public:
-            Move(const PointPtr &ptr, Cluster &from, Cluster &to);
+            Move(const Point &ptr, Cluster &from, Cluster &to);
         private:
-            void perform(const PointPtr &ptr, Cluster &from, Cluster &to);
+            void perform(const Point &ptr, Cluster &from, Cluster &to);
         };
 
     };

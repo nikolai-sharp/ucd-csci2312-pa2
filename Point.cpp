@@ -17,6 +17,7 @@ namespace Clustering
         dim = num;
 //        values = new double[dim];
         //for loop to set all values to 0
+        values.clear();
         for (int i = 0; i < dim; i++)
         {
             values.push_back(0);
@@ -37,10 +38,14 @@ namespace Clustering
     Point::Point(const Point &oPoint)
     {
         dim = oPoint.dim;
+        __id = oPoint.__id;
 //        values = new double[dim];
+        values.clear();
         //For loop copies values of oPoint into the values of this point
-        for (int i = 0; i < dim; i++) {
-            this->values.push_back(oPoint.values[i]);
+        for (int i = 0; i < dim; i++)
+        {
+            //std::cout << oPoint[i] << std::endl;
+            values.push_back(oPoint.values[i]);
         }
     }
 
@@ -55,11 +60,15 @@ namespace Clustering
                 throw DimensionalityMismatchEx("operator=", __id, rhs.__id);//TODO update PID
             }
             //For loop copies values of oPoint into the values of this point
+            values.clear();
             for (int i = 0; i < rhs.dim; i++)
             {
-                values[i] = rhs[i];
+                //std::cout << "value: " << rhs[i] << std::endl;
+                values.push_back(rhs[i]);
                 //std::cout << rhs[i] << std::endl;
             }
+            //copy ID
+            __id = rhs.__id;
         }
         catch (DimensionalityMismatchEx dimMM)
         {
@@ -280,6 +289,7 @@ namespace Clustering
             if (point.dim != point1.dim)
                 throw DimensionalityMismatchEx("operator==", point.__id, point1.__id);
             //for loop returns false if any elements are different
+            
             for (int i = 0; i < point.dim; i++)
             {
                 if (point.values[i] != point1.values[i])
@@ -450,7 +460,7 @@ namespace Clustering
     {
         try
         {
-            if (index >= dim)
+            if (index >= this->dim)
                 throw OutOfBoundsEx("operator[]", "Point", __id);
             return values[index];
         }

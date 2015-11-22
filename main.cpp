@@ -10,15 +10,15 @@ using namespace Clustering;
 int main() {
     
     
-        std::ifstream csv("infile2kd3.txt");
+        std::ifstream csv("infile3000k5d5.txt");
         //std::ifstream csv("infile10kd5.txt");
         
-        KMeans instance(3);
+        KMeans instance(5);
         
         if (csv.is_open())
         {
             csv >> instance;
-            instance.run(4);
+            instance.run(5);
         }
     
     

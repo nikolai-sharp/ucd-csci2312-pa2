@@ -75,6 +75,7 @@ namespace Clustering
 		unsigned int numOfClusters;
 		Clist kCluster;
 		int steps;
+        int numberOfPoints;
 
 		unsigned int dim;
 		//scorediffthreshhold //TODO find best
@@ -84,7 +85,12 @@ namespace Clustering
 
 
 	public:
-		friend std::istream &operator>>(std::istream &is, KMeans &km) {is >> *km.point_space; return is;}
+        friend std::istream &operator>>(std::istream &is, KMeans &km)
+        {
+            is >> *km.point_space;
+            km.numberOfPoints = km.point_space->getSize();
+            return is;
+        }
 
 	};
 }

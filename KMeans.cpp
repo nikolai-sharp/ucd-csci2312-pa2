@@ -4,6 +4,7 @@
 #include "KMeans.h"
 #include <fstream>
 #include <vector>
+#include <forward_list>
 #include <cmath>
 #include "Exceptions.h"
 
@@ -11,13 +12,14 @@ namespace Clustering
 {
 
 
-	KMeans::KMeans(unsigned int d) : kCluster(d)
+    KMeans::KMeans(unsigned int d) : kCluster(d), numberOfPoints(0)
 	{
 		point_space = new Cluster(d);
 		dim = d;
 		steps = 0;
 		score = 0;
 		pScore = 0;
+        numberOfPoints = 0;
 		scoreDiff = SCORE_DIFF_THRESHOLD + 1;
 		//centroidArray = nullptr;
 	}
@@ -44,8 +46,7 @@ namespace Clustering
 	std::ostream &operator<<(std::ostream &os, const KMeans &km)
 	{
 		os << *km.point_space;
-		//TODO loop through created clusters
-
+		
 		os << km.kCluster;
 
 
@@ -109,7 +110,7 @@ namespace Clustering
 		while (ptrC != nullptr)
 		{
 			newC = ptrC->next;
-			ptrC->c->~Cluster();
+			ptrC->c->clear();
 			delete ptrC;
 			ptrC = newC;
 		}
@@ -336,7 +337,8 @@ namespace Clustering
 						{
 							//create min index and min distance
 							int minI = x;
-							double minD = (*(kCluster[x]))[y]->distanceTo(kCluster[x]->getCenroid());
+							double minD = (*(kCluster[x]))[y].distanceTo(kCluster[x]->getCenroid());
+                            
 
 							//std::cout << "\nscoop:" << (*(kCluster[x]))[y]->distanceTo(kCluster[x]->getCenroid());
 							//loop through clusters centroids, include point_space(represented by index k-1)
@@ -344,17 +346,17 @@ namespace Clustering
 							{
 								//'if' for kCluster points not including current kCluster 'x'
 								if (z != numOfClusters - 1 && z != x &&
-									minD > (*(kCluster[x]))[y]->distanceTo(kCluster[z]->getCenroid()))
+									minD > (*(kCluster[x]))[y].distanceTo(kCluster[z]->getCenroid()))
 								{
 									minI = z;
-									minD = (*(kCluster[x]))[y]->distanceTo(kCluster[z]->getCenroid());
+									minD = (*(kCluster[x]))[y].distanceTo(kCluster[z]->getCenroid());
 								}
 									//else if for point_space centroid
 								else if (z == numOfClusters - 1 && z != x &&
-										minD > (*(kCluster[x]))[y]->distanceTo(point_space->getCenroid()))
+										minD > (*(kCluster[x]))[y].distanceTo(point_space->getCenroid()))
 								{
 									minI = z;
-									minD = (*(kCluster[x]))[y]->distanceTo(point_space->getCenroid());
+									minD = (*(kCluster[x]))[y].distanceTo(point_space->getCenroid());
 								}
 							}
 							//move point if closer centroid is in another cluster. first if for kCluster
@@ -362,13 +364,15 @@ namespace Clustering
                             {
                                 if (minI != x && minI != numOfClusters - 1)
                                 {
-                                    Cluster::Move((*(kCluster[x]))[y], *kCluster[x], *kCluster[minI]);
+                                    Point P = (*(kCluster[x]))[y];
+                                    Cluster::Move(P, *kCluster[x], *kCluster[minI]);
                                     y--;
                                 }
                                 //move point to point_space if point_space centroid is coser
                                 else if (minI != x && minI == numOfClusters - 1)
                                 {
-                                    Cluster::Move((*(kCluster[x]))[y], *kCluster[x], *point_space);
+                                    Point P = (*(kCluster[x]))[y];
+                                    Cluster::Move(P, *kCluster[x], *point_space);
                                     y--;
                                 }
                             }
@@ -395,17 +399,18 @@ namespace Clustering
 						int minI = numOfClusters - 1;
 						//find min distance
                         //std::cout << "wtf2: " << (*point_space)[j]->distanceTo(point_space->getCenroid()) << std::endl;
-						double minD = (*point_space)[j]->distanceTo(point_space->getCenroid());
+						double minD = (*point_space)[j].distanceTo(point_space->getCenroid());
 						//loop through centroids, don't need to go through point_space
 						for (int l = 0; l < numOfClusters - 1; l++)
 						{
 //							std::cout << "\ni: " << i << "j: " << j;
 //							std::cout << "l: " << l << ":" << (*point_space)[j]->distanceTo(kCluster[l]->getCenroid());
 							//set new minP and minD if closer
-							if ((*point_space)[j]->distanceTo(kCluster[l]->getCenroid()) < minD)
+							if ((*point_space)[j].distanceTo(kCluster[l]->getCenroid()) < minD)
 							{
 								minI = l;
-								minD = (*point_space)[j]->distanceTo(kCluster[l]->getCenroid());
+								minD = (*point_space)[j].distanceTo(kCluster[l]->getCenroid());
+                                //std::cout << (*point_space)[j].distanceTo(kCluster[l]->getCenroid()) << std::endl;
 							}
 						}
 
@@ -414,7 +419,10 @@ namespace Clustering
                         {
                             if (minI != numOfClusters - 1)
                             {
-                                Cluster::Move((*point_space)[j], *point_space, *kCluster[minI]);
+//                                if (j == 2)
+//                                    std::cout << "check";
+                                Point P = (*point_space)[j];
+                                Cluster::Move(P, *point_space, *kCluster[minI]);
                                 j--;
                             }
                         }
