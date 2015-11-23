@@ -5,34 +5,23 @@
 #ifndef CLUSTERING_CLUSTER_H
 #define CLUSTERING_CLUSTER_H
 
-#include <cassert>
+//#include <cassert>
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>
 #include <forward_list>
+#include <unordered_map>
+//#include <utility>
+#include <functional>
+
 #include "Exceptions.h"
 #include "Point.h"
 
 
 namespace Clustering
 {
-
-//    typedef Point *PointPtr;
-    //typedef std::shared_ptr<Point*> PointPtr;
-//    typedef struct LNode *LNodePtr;
-
-//    struct LNode;
-//    typedef LNode *LNodePtr;
-
-
-//    struct LNode {
-//        PointPtr p;
-//        LNodePtr next;
-//    };
-
-
     class Cluster {
     private:
         std::forward_list<Point> points;
@@ -42,7 +31,10 @@ namespace Clustering
         //point to next LNode for comparison to ptPtr
         std::forward_list<Point>::iterator nItr;
         
+        static std::unordered_map<size_t,double> disMapCl;
+//        static std::unordered_map<std::string,double> disMapCl;
         
+        static int TOTAL_POINTS;
         
         ////////////////todo
         //used to create new LNode
@@ -57,9 +49,10 @@ namespace Clustering
 
 
     public:
+        
         //declaration of Move class:
         friend class Move; //TODO check this
-        //Cluster();
+        Cluster() = delete;
 
         Cluster(unsigned int d);
 
@@ -147,6 +140,10 @@ namespace Clustering
         int getDimms() const {return dim;}
         void clear();
 
+        //map functions
+        const size_t p(int p1, int p2) const;
+//        const std::string p(int p1, int p2) const;
+        void setTotalPoints(int t) {TOTAL_POINTS = t;}
 
 
 
@@ -161,8 +158,8 @@ namespace Clustering
 
     };
 
-//     inlclude "Cluster.cpp"   //keep for templates in Cluster // don't forget to remove Cluster.cpp from CMakeLists.
 
 }
+#include "Cluster.cpp"   //keep for templates in Cluster // don't forget to remove Cluster.cpp from CMakeLists.
 #endif //CLUSTERING_CLUSTER_H
 //

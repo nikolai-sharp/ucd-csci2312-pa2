@@ -8,6 +8,10 @@
 
 namespace Clustering
 {
+    std::unordered_map<size_t,double> Cluster::disMapCl;
+//    std::unordered_map<std::string,double> Cluster::disMapCl;
+    
+    int Cluster::TOTAL_POINTS = 0;
     void Cluster::add(Point const &ptr)
     {
         try
@@ -729,12 +733,32 @@ namespace Clustering
                 //this iterator keeps track of the second while loop,
                 std::forward_list<Point>::const_iterator it2;
                 
+                std::unordered_map<size_t, double>::iterator itM;
+                std::pair<std::unordered_map<size_t, double>::iterator,bool> pair2;
+                size_t pair3;
+//                std::unordered_map<std::string, double>::iterator itM;
+//                std::pair<std::unordered_map<std::string, double>::iterator,bool> pair2;
+//                std::string pair3;
+
+                
                 while (it != points.end())
                 {
                     it2 = itT;
                     while (it2 != points.end())
                     {
-                        d = d + (*it).distanceTo(*it2);
+                        pair3 = p((*it).getId(),(*it2).getId());
+                        itM = Cluster::disMapCl.find(pair3);
+                        if (itM == Cluster::disMapCl.end())
+                        {
+//                            std::dcout << "\ntrue";
+                            pair2 = Cluster::disMapCl.emplace(pair3,(*it).distanceTo(*it2));
+                            if (pair2.second)
+                                itM = pair2.first;
+//                            std::cout << std::endl << pair2.first->first << "   " << pair2.first->second;
+                        }
+
+                        
+                        d += itM->second;;
                         it2++;
                     }
                     //all of the distances associated with 'it' have been added. increment to next
@@ -775,6 +799,14 @@ namespace Clustering
             
             //sum of distances
             double d = 0;
+            std::unordered_map<size_t, double>::iterator itM;
+            std::pair<std::unordered_map<size_t, double>::iterator,bool> pair2;
+            size_t pair3;
+            
+//            std::unordered_map<std::string, double>::iterator itM;
+//            std::pair<std::unordered_map<std::string, double>::iterator,bool> pair2;
+//            std::string pair3;
+
             
             while (it != c1.points.end())
             {
@@ -782,7 +814,16 @@ namespace Clustering
                 it2 = c2.points.begin();
                 while (it2 != c2.points.end())
                 {
-                    d += (*it2).distanceTo(*it);
+                    pair3 = c1.p((*it).getId(),(*it2).getId());
+                    itM = Cluster::disMapCl.find(pair3);
+                    if (itM == Cluster::disMapCl.end())
+                    {
+                        pair2 = Cluster::disMapCl.emplace(pair3,(*it).distanceTo(*it2));
+                        if (pair2.second)
+                            itM = pair2.first;
+                    }
+                    d += itM->second;
+                    
                     it2++;
                 }
                 it++;
@@ -832,4 +873,32 @@ namespace Clustering
         size = 0;
         __centroidIsValid = false;
     }
+    
+    const size_t Cluster::p(int p1,int p2) const
+    {
+        size_t a,b;
+        if (p1 <= p2)
+        {
+            a = p1;
+            b = p2;
+        }
+        else
+        {
+            a = p2;
+            b = p1;
+        }
+//        return (a + b) * (a + b + 1) / 2 + a;
+        return a + b*TOTAL_POINTS;//fewer operations. program still slower than not using hash tables.
+        
+    }
+
+//    const std::string Cluster::p(int p1,int p2) const
+//    {
+//        if (p1 <= p2)
+//            return std::to_string(p1) + ":" + std::to_string(p2);
+//        else
+//            return std::to_string(p1) + ":" + std::to_string(p2);
+//        
+//    }
+    
 }

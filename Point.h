@@ -79,7 +79,6 @@ namespace Clustering
         
     };
 
-//    #inlclude "Point.cpp"   //keep for templates in Cluster // don't forget to remove Point.cpp from CMakeLists.
-
 }
+#include "Point.cpp"
 #endif //CLUSTERING_POINT_H

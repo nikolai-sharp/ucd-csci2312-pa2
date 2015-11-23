@@ -2,17 +2,13 @@
 // Created by Nikolai Sharp on 10/21/15.
 //
 #include "KMeans.h"
-#include <fstream>
-#include <vector>
-#include <forward_list>
-#include <cmath>
-#include "Exceptions.h"
+
 
 namespace Clustering
 {
 
 
-    KMeans::KMeans(unsigned int d) : kCluster(d), numberOfPoints(0)
+    KMeans::KMeans(unsigned int d): numberOfPoints(0)
 	{
 		point_space = new Cluster(d);
 		dim = d;
@@ -24,122 +20,140 @@ namespace Clustering
 		//centroidArray = nullptr;
 	}
 
-	KMeans::~KMeans()
-	{
-		//point_space->~Cluster();
-		delete point_space;
-		//delete kCluster;//not a pointer
-
-//		for (int i = 0; i < numOfClusters; i++)
-//		{
-//			centroidArray[i].~Point();
-//		}
-
-        centroidArray.clear();
-
-		//kCluster.~Clist();
-
-
-
-	}
+//	KMeans::~KMeans()
+//	{
+//		//point_space->~Cluster();
+//		delete point_space;
+//		//delete kCluster;//not a pointer
+//
+////		for (int i = 0; i < numOfClusters; i++)
+////		{
+////			centroidArray[i].~Point();
+////		}
+//
+//        centroidArray.clear();
+//
+//		//kCluster.~Clist();
+//
+//
+//
+//	}
 
 	std::ostream &operator<<(std::ostream &os, const KMeans &km)
 	{
 		os << *km.point_space;
 		
-		os << km.kCluster;
+//		os << km.kCluster;
+        
+        for (int i = 0; i < km.numOfClusters -1; i++)
+        {
+            os << (km.kCluster)[i];
+        }
 
 
 		return os;
 	}
 
 
-	void KMeans::Clist::addCluster(unsigned int dims)
-	{
-		if (size == 0)
-		{
-			firstC = new CNode;
-			firstC->c = new Cluster(dims);
-			lastC = firstC;
-			size++;
-			lastC->next = nullptr;
-		}
-		else
-		{
-			newC = new CNode;
-			newC->c = new Cluster(dims);
-			lastC->next = newC;
-			lastC = newC;
-			lastC->next = nullptr;
-			size++;
-		}
-	}
+//	void KMeans::Clist::addCluster(unsigned int dims)
+//	{
+//		if (size == 0)
+//		{
+//			firstC = new CNode;
+//			firstC->c = new Cluster(dims);
+//			lastC = firstC;
+//			size++;
+//			lastC->next = nullptr;
+//		}
+//		else
+//		{
+//			newC = new CNode;
+//			newC->c = new Cluster(dims);
+//			lastC->next = newC;
+//			lastC = newC;
+//			lastC->next = nullptr;
+//			size++;
+//		}
+//	}
 
-	CPointer &KMeans::Clist::operator[](int i)
-	{
-		if (i < size && i >= 0)
-		{
-			int index = 0;
-			ptrC = firstC;
-			while (ptrC != nullptr)
-			{
-				if (index == i)
-					return ptrC->c;
-				else
-				{
-					index++;
-					ptrC = ptrC->next;
-				}
-			}
-		}
-        //try catch
-        return firstC->c;
-	}
+//	CPointer &KMeans::Clist::operator[](int i)
+//	{
+//		if (i < size && i >= 0)
+//		{
+//			int index = 0;
+//			ptrC = firstC;
+//			while (ptrC != nullptr)
+//			{
+//				if (index == i)
+//					return ptrC->c;
+//				else
+//				{
+//					index++;
+//					ptrC = ptrC->next;
+//				}
+//			}
+//		}
+//        //try catch
+//        return firstC->c;
+//	}
 
-	KMeans::Clist::Clist(unsigned int dims)
-	{
-		firstC = nullptr;
-		lastC = nullptr;
-		dim = dims;
-	}
-
-
-	KMeans::Clist::~Clist()
-	{
-		ptrC = firstC;
-		while (ptrC != nullptr)
-		{
-			newC = ptrC->next;
-			ptrC->c->clear();
-			delete ptrC;
-			ptrC = newC;
-		}
-	}
+//	KMeans::Clist::Clist(unsigned int dims)
+//	{
+//		firstC = nullptr;
+//		lastC = nullptr;
+//		dim = dims;
+//	}
 
 
-	std::ostream &operator<<(std::ostream &os, const KMeans::Clist &clist)
-	{
-		CNodePtr ptr = clist.firstC;
-		while (ptr != nullptr)
-		{
-			os << *ptr->c;
-			ptr = ptr->next;
-		}
-		return os;
-	}
+//	KMeans::Clist::~Clist()
+//	{
+//		ptrC = firstC;
+//		while (ptrC != nullptr)
+//		{
+//			newC = ptrC->next;
+//			ptrC->c->clear();
+//			delete ptrC;
+//			ptrC = newC;
+//		}
+//	}
+
+
+//	std::ostream &operator<<(std::ostream &os, const KMeans::Clist &clist)
+//	{
+//		CNodePtr ptr = clist.firstC;
+//		while (ptr != nullptr)
+//		{
+//			os << *ptr->c;
+//			ptr = ptr->next;
+//		}
+//		return os;
+//	}
 
 	void KMeans::run(unsigned int k)
 	{
-		std::ofstream outfile("out.txt");
+//		std::ofstream outfile("out.txt");
+        std::ofstream outfile("Sharp_pa3_out.txt");
 		numOfClusters = k;
 		//create k-1 clusters
 
 
 		for (int i = 0; i < k - 1; i++)
 		{
-			kCluster.addCluster(dim);
+            Cluster k(dim);
+            kCluster.push_back(k);
 		}
 
+//        //populate map
+//        for (int i = 0; i < point_space->getSize() - 1; i++)
+//        {
+//            for (int j = i+1; j < point_space->getSize(); j++)
+//            {
+//                dMap.insert(std::make_pair(p((*point_space)[i].getId(),(*point_space)[j].getId()), (*point_space)[i].distanceTo((*point_space)[j])));
+////                std::cout << "\n" << k << "  :"  << p((*point_space)[i].getId(),(*point_space)[j].getId());
+////                std::cout << "  : " << (*point_space)[i].distanceTo((*point_space)[j]);
+//                k++;
+//            }
+//        }
 
 		//create initial k centroids
 //        for (int i = 0; i < k; i++)
@@ -159,7 +173,7 @@ namespace Clustering
         {
             for (int i = 0; i < k-1; i++)
             {
-                kCluster[i]->setCentroid(centroidArray.at(i));
+                kCluster[i].setCentroid(centroidArray.at(i));
             }
             point_space->setCentroid(centroidArray.at(k-1));
         }
@@ -209,7 +223,7 @@ namespace Clustering
                 
                 if (a != numOfClusters - 1)
                 {
-                    sum = sum + kCluster[a]->intraClusterDistance();
+                    sum = sum + kCluster[a].intraClusterDistance();
                 }
                 else
                 {
@@ -242,10 +256,10 @@ namespace Clustering
                     //since pointspace is the last cluster this would get to, it shouldn't even run
                     //std::cout << "\n test: " << kCluster[a]->interClusterDistance(*kCluster[a], *kCluster[c]);
                     if (c != numOfClusters-1)
-                        sum = sum + interClusterDistance(*kCluster[a], *kCluster[c]);
+                        sum = sum + interClusterDistance(kCluster[a], kCluster[c]);
                     //sum += Clustering::interClusterDistance(*kCluster[a], *kCluster[c]);
                     else if (c == numOfClusters - 1)
-                        sum = sum + interClusterDistance(*kCluster[a],*point_space);
+                        sum = sum + interClusterDistance(kCluster[a],*point_space);
                     //sum += Clustering::interClusterDistance(*kCluster[a],*point_space);
                 }
             }
@@ -268,7 +282,7 @@ namespace Clustering
                 
                 if (a != numOfClusters - 1)
                 {
-                    sum = sum + kCluster[a]->getClusterEdges();
+                    sum = sum + kCluster[a].getClusterEdges();
                 }
                 else
                 {
@@ -298,9 +312,9 @@ namespace Clustering
                     //these two cases should account for every set of intercluster distances
                     //since pointspace is the last cluster this would get to, it shouldn't even run
                     if (c != numOfClusters-1)
-                        sum = sum + interClusterEdges(*kCluster[a], *kCluster[c]);
+                        sum = sum + interClusterEdges(kCluster[a], kCluster[c]);
                     else if (c == numOfClusters - 1)
-                        sum = sum + interClusterEdges(*kCluster[a],*point_space);
+                        sum = sum + interClusterEdges(kCluster[a],*point_space);
                 }
             }
             return sum;
@@ -333,11 +347,11 @@ namespace Clustering
 
 
 						//loop through points of each cluster
-						for (int y = 0; y < kCluster[x]->getSize(); y++)
+						for (int y = 0; y < kCluster[x].getSize(); y++)
 						{
 							//create min index and min distance
 							int minI = x;
-							double minD = (*(kCluster[x]))[y].distanceTo(kCluster[x]->getCenroid());
+							double minD = ((kCluster[x]))[y].distanceTo(kCluster[x].getCenroid());
                             
 
 							//std::cout << "\nscoop:" << (*(kCluster[x]))[y]->distanceTo(kCluster[x]->getCenroid());
@@ -346,17 +360,17 @@ namespace Clustering
 							{
 								//'if' for kCluster points not including current kCluster 'x'
 								if (z != numOfClusters - 1 && z != x &&
-									minD > (*(kCluster[x]))[y].distanceTo(kCluster[z]->getCenroid()))
+                                    minD > ((kCluster[x]))[y].distanceTo(kCluster[z].getCenroid()))
 								{
 									minI = z;
-									minD = (*(kCluster[x]))[y].distanceTo(kCluster[z]->getCenroid());
+									minD = ((kCluster[x]))[y].distanceTo(kCluster[z].getCenroid());
 								}
 									//else if for point_space centroid
 								else if (z == numOfClusters - 1 && z != x &&
-										minD > (*(kCluster[x]))[y].distanceTo(point_space->getCenroid()))
+										minD > ((kCluster[x]))[y].distanceTo(point_space->getCenroid()))
 								{
 									minI = z;
-									minD = (*(kCluster[x]))[y].distanceTo(point_space->getCenroid());
+									minD = ((kCluster[x]))[y].distanceTo(point_space->getCenroid());
 								}
 							}
 							//move point if closer centroid is in another cluster. first if for kCluster
@@ -364,15 +378,15 @@ namespace Clustering
                             {
                                 if (minI != x && minI != numOfClusters - 1)
                                 {
-                                    Point P = (*(kCluster[x]))[y];
-                                    Cluster::Move(P, *kCluster[x], *kCluster[minI]);
+                                    Point P = ((kCluster[x]))[y];
+                                    Cluster::Move(P, kCluster[x], kCluster[minI]);
                                     y--;
                                 }
                                 //move point to point_space if point_space centroid is coser
                                 else if (minI != x && minI == numOfClusters - 1)
                                 {
-                                    Point P = (*(kCluster[x]))[y];
-                                    Cluster::Move(P, *kCluster[x], *point_space);
+                                    Point P = ((kCluster[x]))[y];
+                                    Cluster::Move(P, kCluster[x], *point_space);
                                     y--;
                                 }
                             }
@@ -406,10 +420,10 @@ namespace Clustering
 //							std::cout << "\ni: " << i << "j: " << j;
 //							std::cout << "l: " << l << ":" << (*point_space)[j]->distanceTo(kCluster[l]->getCenroid());
 							//set new minP and minD if closer
-							if ((*point_space)[j].distanceTo(kCluster[l]->getCenroid()) < minD)
+							if ((*point_space)[j].distanceTo(kCluster[l].getCenroid()) < minD)
 							{
 								minI = l;
-								minD = (*point_space)[j].distanceTo(kCluster[l]->getCenroid());
+								minD = (*point_space)[j].distanceTo(kCluster[l].getCenroid());
                                 //std::cout << (*point_space)[j].distanceTo(kCluster[l]->getCenroid()) << std::endl;
 							}
 						}
@@ -422,7 +436,7 @@ namespace Clustering
 //                                if (j == 2)
 //                                    std::cout << "check";
                                 Point P = (*point_space)[j];
-                                Cluster::Move(P, *point_space, *kCluster[minI]);
+                                Cluster::Move(P, *point_space, kCluster[minI]);
                                 j--;
                             }
                         }
@@ -443,9 +457,9 @@ namespace Clustering
                 for (int x = 0; x < numOfClusters; x++) //TODO
                 {
                     // go through point_space
-                    if (x != numOfClusters - 1 && kCluster[x]->getSize() > 0 && !kCluster[x]->centroidIsValid())
+                    if (x != numOfClusters - 1 && kCluster[x].getSize() > 0 && !kCluster[x].centroidIsValid())
                     {
-                        kCluster[x]->computeCentroid();
+                        kCluster[x].computeCentroid();
                     }
                     else if (x == numOfClusters - 1 && point_space->getSize() > 0 && !point_space->centroidIsValid())
                     {
@@ -480,6 +494,17 @@ namespace Clustering
 		std::cout << "\n!!done!!\n";
 
 	}
+    
+    const std::pair<unsigned int,unsigned int> KMeans::p(unsigned int p1, unsigned int p2) const
+    {
+        std::pair<unsigned int,unsigned int> pair1;
+        if (p1 <= p2)
+            pair1 = {p1,p2};
+        else
+            pair1= {p2,p1};
+        
+        return pair1;
+    }
 
 }
 

@@ -11,8 +11,9 @@ int main() {
     
     
         std::ifstream csv("infile3000k5d5.txt");
-        //std::ifstream csv("infile10kd5.txt");
-        
+//        std::ifstream csv("infile10kd5.txt");
+//        std::ifstream csv("infile2kd3.txt");
+    
         KMeans instance(5);
         
         if (csv.is_open())
@@ -20,6 +21,9 @@ int main() {
             csv >> instance;
             instance.run(5);
         }
+    
+
+    
     
     
 
