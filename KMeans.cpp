@@ -142,6 +142,10 @@ namespace Clustering
             Cluster k(dim);
             kCluster.push_back(k);
 		}
+        for (int i = 0; i < k - 1; i ++)
+        {
+            kCluster[i].setID(i+2);
+        }
 
 //        //populate map
 //        for (int i = 0; i < point_space->getSize() - 1; i++)

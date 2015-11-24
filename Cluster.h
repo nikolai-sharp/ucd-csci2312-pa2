@@ -49,7 +49,8 @@ namespace Clustering
 
 
     public:
-        
+
+
         //declaration of Move class:
         friend class Move; //TODO check this
         Cluster() = delete;
@@ -134,6 +135,7 @@ namespace Clustering
         //id functions
         int getID() {return __id;}
         int generateID() {static int numberOfClusters = 0; return  ++numberOfClusters;}
+        void setID(int i) {__id = i;}
 
         Point &operator[](int i); //use to access points in Kmeans
         
